@@ -1,308 +1,428 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-    <head>
-    <meta charset="utf-8">
-
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><title>数字式秒表 | Jiao-77的博客</title><noscript>开启JavaScript才能访问本站哦~</noscript><link rel="icon" href="/img/pwa/favicon.ico"><!-- index.css--><link rel="stylesheet" href="/css/index.css?v=1.11.3"><!-- inject head--><link rel="stylesheet" href="https://cdn2.codesign.qq.com/icons/7pOrz0WXB5ZWJPX/latest/iconfont.css"><!-- aplayer--><!-- swiper--><!-- fancybox ui--><!-- katex--><!-- Open Graph--><meta name="description" content="实验目的： 掌握计数器的功能与应用. 理解开关防颤动的必要性. 掌握简单控制器的设计方法. # 实验任务： 基本要求： 计时范围0&amp;#39;0.0&amp;#39;&amp;#39; ~ 9&amp;#39;59.9&amp;#39;&amp;#39;，分辨率为用数码管显示计数值。 秒表设有一个功能按键开关 ButtonIn。 当电路处于“初始”状态时，第一"><!-- pwa--><meta name="apple-mobile-web-app-capable" content="Jiao-77的博客"><meta name="theme-color" content="var(--efu-main)"><meta name="apple-mobile-web-app-status-bar-style" content="var(--efu-main)"><link rel="bookmark" href="/img/pwa/favicon.ico"><link rel="apple-touch-icon" href="/img/pwa/favicon.ico" sizes="180x180"><script>console.log(
+    "%c Program: Hexo %c Theme: Solitude %c Version: v1.11.3",
+    "border-radius:5px 0 0 5px;padding: 5px 10px;color:white;background:#ff3842;",
+    "padding: 5px 10px;color:white;background:#3e9f50;",
+    "padding: 5px 10px;color:white;background:#0084ff;border-radius:0 5px 5px 0",
+)
+</script><script>(()=>{
+        const saveToLocal = {
+            set: function setWithExpiry(key, value, ttl) {
+                if (ttl === 0)
+                    return
+                const now = new Date()
+                const expiryDay = ttl * 86400000
+                const item = {
+                    value: value,
+                    expiry: now.getTime() + expiryDay
+                }
+                localStorage.setItem(key, JSON.stringify(item))
+            },
+            get: function getWithExpiry(key) {
+                const itemStr = localStorage.getItem(key)
     
-
-    <!-- 渲染优化 -->
-    <meta name="renderer" content="webkit">
-    <meta name="force-rendering" content="webkit">
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
-    <meta name="HandheldFriendly" content="True" >
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
-    <!--icon-->
-
+                if (!itemStr) {
+                    return undefined
+                }
+                const item = JSON.parse(itemStr)
+                const now = new Date()
     
+                if (now.getTime() > item.expiry) {
+                    localStorage.removeItem(key)
+                    return undefined
+                }
+                return item.value
+            }
+        };
+        window.utils = {
+            saveToLocal: saveToLocal,
+            getCSS: (url, id = false) => new Promise((resolve, reject) => {
+              const link = document.createElement('link')
+              link.rel = 'stylesheet'
+              link.href = url
+              if (id) link.id = id
+              link.onerror = reject
+              link.onload = link.onreadystatechange = function() {
+                const loadState = this.readyState
+                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+                link.onload = link.onreadystatechange = null
+                resolve()
+              }
+              document.head.appendChild(link)
+            }),
+            getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+              const script = document.createElement('script')
+              script.src = url
+              script.async = true
+              script.onerror = reject
+              script.onload = script.onreadystatechange = function() {
+                const loadState = this.readyState
+                if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+                script.onload = script.onreadystatechange = null
+                resolve()
+              }
     
+              Object.keys(attr).forEach(key => {
+                script.setAttribute(key, attr[key])
+              })
     
-    
-    
-
-
-    <!-- meta -->
-
-
-<title>数字式秒表 | Jiao-77的博客</title>
-
-
-    <meta name="keywords" content="数字系统设计实验">
-
-
-
-
-    <!-- OpenGraph -->
- 
-    <meta name="description" content="实验目的： 掌握计数器的功能与应用. 理解开关防颤动的必要性. 掌握简单控制器的设计方法.  实验任务：基本要求： 计时范围0’0.0’’ ~ 9’59.9’’，分辨率为$0.1s$用数码管显示计数值。 秒表设有一个功能按键开关 ButtonIn。当电路处于“初始”状态时，第一次按键，开始自动计时；再次按键，停止计时；第三次按键，计数器自动复位$0’0.0’’$，即电路恢复初始状态。  个性化要求">
-<meta property="og:type" content="article">
-<meta property="og:title" content="数字式秒表">
-<meta property="og:url" content="http://example.com/2024/06/08/%E6%95%B0%E5%AD%97%E5%BC%8F%E7%A7%92%E8%A1%A8/index.html">
-<meta property="og:site_name" content="Jiao-77的博客">
-<meta property="og:description" content="实验目的： 掌握计数器的功能与应用. 理解开关防颤动的必要性. 掌握简单控制器的设计方法.  实验任务：基本要求： 计时范围0’0.0’’ ~ 9’59.9’’，分辨率为$0.1s$用数码管显示计数值。 秒表设有一个功能按键开关 ButtonIn。当电路处于“初始”状态时，第一次按键，开始自动计时；再次按键，停止计时；第三次按键，计数器自动复位$0’0.0’’$，即电路恢复初始状态。  个性化要求">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2024/06/08/%E6%95%B0%E5%AD%97%E5%BC%8F%E7%A7%92%E8%A1%A8/6.jpg">
-<meta property="article:published_time" content="2024-06-08T12:20:18.000Z">
-<meta property="article:modified_time" content="2024-06-08T15:39:38.279Z">
-<meta property="article:author" content="Jiao-77">
-<meta property="article:tag" content="数字系统设计实验">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2024/06/08/%E6%95%B0%E5%AD%97%E5%BC%8F%E7%A7%92%E8%A1%A8/6.jpg">
-
-
-    
-<link rel="stylesheet" href="/css/style/main.css">
- 
-
-    
-    
-    
-
-    
-
-     
-
-    <!-- custom head -->
-
-<meta name="generator" content="Hexo 7.2.0"></head>
-
-    <body>
-        <div id="app" tabindex="-1">
-            <header class="header">
-    <div class="header__left">
-        <a href="/" class="button">
-            <span class="logo__text">Jiao-77个人博客</span>
-        </a>
-    </div>
-    <div class="header__right">
+              document.head.appendChild(script)
+            }),
+            addGlobalFn: (key, fn, name = false, parent = window) => {
+                const globalFn = parent.globalFn || {}
+                const keyObj = globalFn[key] || {}
         
-            <div class="navbar__menus">
-                
-                    <a href="/" class="navbar-menu button">首页</a>
-                
-                    <a href="/tags/" class="navbar-menu button">标签</a>
-                
-                    <a href="/archives/" class="navbar-menu button">归档</a>
-                
-                    <a href="/friends/" class="navbar-menu button">友链</a>
-                
-                    <a href="/page/" class="navbar-menu button">Page</a>
-                
-            </div>
+                if (name && keyObj[name]) return
         
-        
-        
+                name = name || Object.keys(keyObj).length
+                keyObj[name] = fn
+                globalFn[key] = keyObj
+                parent.globalFn = globalFn
+            },
+        }
+    })()</script><!-- global head--><script>const GLOBAL_CONFIG = {
+    root: '/',
+    algolia: undefined,
+    localsearch: undefined,
+    runtime: '2023-04-20 00:00:00',
+    lazyload: {
+        enable: false,
+        error: '/img/error_load.webp'
+    },
+    copyright: {"limit":50,"author":"作者: Jiao-77","link":"链接: ","source":"来源: Jiao-77的博客","info":"著作权归作者所有。 商业转载请联系作者获得授权，非商业转载请注明出处。"},
+    highlight: {
+        enable: true,
+        limit: 200,
+        expand: true,
+        copy: true,
+        syntax: 'highlight.js'
+    },
+    randomlink: false,
+    lang: {"theme":{"dark":"已切换至深色模式","light":"已切换至浅色模式"},"copy":{"success":"复制成功","error":"复制失败"},"backtop":"返回顶部","time":{"day":"天前","hour":"小时前","just":"刚刚","min":"分钟前","month":"个月前"},"day":" 天","f12":"开发者模式已打开，请遵循GPL协议。","totalk":"无需删除空行，直接输入评论即可"},
+    aside: {
+        sayhello: {
+            morning: '一日之计在于晨',
+            noon: '吃饱了才有力气干活',
+            afternoon: '集中精力，攻克难关',
+            night: '不要太劳累了，早睡更健康',
+            goodnight: '睡个好觉，保证精力充沛',
+        },
+        sayhello2: [],
+        sayhello3: {
+            prefix: '好久不见，',
+            back: '欢迎再次回来，',
+        },
+    },
+    covercolor: {
+        enable: false
+    },
+    comment: false,
+    lightbox: 'null',
+    post_ai: false,
+    right_menu: false,
+};</script><!-- page-config head--><script id="config-diff">var PAGE_CONFIG = {
+    is_post: true,
+    is_page: false,
+    is_home: false,
+    page: '',
+    toc: true,
+    comment: false,
+    ai_text: false
+}</script><meta name="generator" content="Hexo 7.2.0"><style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
 
-        
-        
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
 
-        
-            <a class="dropdown-icon button" id="btn-dropdown" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path></svg></a>
-            <div class="dropdown-menus" id="dropdown-menus">
-                
-                    <a href="/" class="dropdown-menu button">首页</a>
-                
-                    <a href="/tags/" class="dropdown-menu button">标签</a>
-                
-                    <a href="/archives/" class="dropdown-menu button">归档</a>
-                
-                    <a href="/friends/" class="dropdown-menu button">友链</a>
-                
-                    <a href="/page/" class="dropdown-menu button">Page</a>
-                
-            </div>
-        
-    </div>
-</header>
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
 
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
 
-            <main class="main">
-    
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
 
-<div class="post-title">
-    <h1 class="post-title__text">
-        数字式秒表
-    </h1>
-    <div class="post-title__meta">
-        <a href="/archives/2024/06/" class="post-meta__date button">2024-06-08</a>
-        
- 
-        
-    
-    
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
 
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
 
- 
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
 
- 
-    </div>
-</div>
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
 
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
 
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
 
-<article class="post content-card">
-    <div class="post__header"></div>
-    <div class="post__content">
-        <h1 id="实验目的："><a href="#实验目的：" class="headerlink" title="实验目的："></a>实验目的：</h1><ul>
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head><body id="body"><!-- universe--><canvas id="universe"></canvas><!-- loading--><!-- console--><div id="console"><div class="close-btn" onclick="sco.hideConsole()"><i class="solitude st-close-fill"></i></div><div class="button-group"><div class="console-btn-item"><span class="darkmode_switchbutton" onclick="sco.switchDarkMode()" title="昼夜切换"><i class="solitude st-moon-clear-fill"></i></span></div><div class="console-btn-item" id="consoleHideAside"><span class="asideSwitch" onclick="sco.switchHideAside()" title="边栏显示控制"><i class="solitude st-side-bar-fill"></i></span></div></div><div class="console-mask" onclick="sco.hideConsole()"></div></div><!-- sidebar--><div id="sidebar" style="zoom: 1;"><div id="menu-mask" style="display: none;"></div><div id="sidebar-menus"><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a></div></div></div><span class="sidebar-menu-item-title">功能</span><div class="sidebar-menu-item"><span class="darkmode_switchbutton menu-child" onclick="sco.switchDarkMode()"><i class="solitude st-moon-clear-fill"></i><span>显示模式</span></span></div><span class="sidebar-menu-item-title">标签</span><div class="card-widget card-tags card-archives card-webinfo card-allinfo"><div class="card-tag-cloud"><a href="/tags/%E6%99%AE%E7%89%A9%E5%AE%9E%E9%AA%8C2/">普物实验2<sup>1</sup></a><a href="/tags/%E6%95%B0%E5%AD%97%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E5%AE%9E%E9%AA%8C/">数字系统设计实验<sup>1</sup></a></div></div></div></div><!-- keyboard--><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav class="show" id="nav"><div id="nav-group"><div id="blog_name"><a id="site-name" href="/" title="返回博客主页"><span class="title">Solitude</span></a></div><div id="page-name-mask"><div id="page-name"><a id="page-name-text" onclick="sco.toTop()">数字式秒表</a></div></div><div id="menus"></div><div id="nav-left"></div><div id="nav-right"><div class="nav-button" id="nav-totop" onclick="sco.toTop()"><a class="totopbtn"><i class="solitude st-arrow-up-line"></i><span id="percent">0</span></a></div><div id="toggle-menu"><a class="site-page"><i class="solitude st-menu-line"></i></a></div></div></div></nav><div class="coverdiv" id="coverdiv"><img class="nolazyload" id="post-cover" src="/img/default.png" alt="数字式秒表"></div><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original" title="该文章为原创文章，注意版权协议">原创</a><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%95%B0%E5%AD%97%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E5%AE%9E%E9%AA%8C/"><span class="tags-name tags-punctuation">数字系统设计实验</span></a></div></div></div></div><h1 class="post-title">数字式秒表</h1><div id="post-meta"><div class="meta-secondline"></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="实验目的">实验目的：</h1>
+<ul>
 <li>掌握计数器的功能与应用.</li>
 <li>理解开关防颤动的必要性.</li>
-<li>掌握简单控制器的设计方法.</li>
+<li>掌握简单控制器的设计方法.<br>
+# 实验任务：</li>
 </ul>
-<h1 id="实验任务："><a href="#实验任务：" class="headerlink" title="实验任务："></a>实验任务：</h1><h2 id="基本要求："><a href="#基本要求：" class="headerlink" title="基本要求："></a>基本要求：</h2><ul>
-<li>计时范围0’0.0’’ ~ 9’59.9’’，分辨率为$0.1s$用数码管显示计数值。</li>
-<li>秒表设有一个功能按键开关 <code>ButtonIn</code>。<br>当电路处于“初始”状态时，第一次按键，开始自动计时；再次按键，停止计时；第三次按键，计数器自动复位$0’0.0’’$，即电路恢复初始状态。</li>
+<h2 id="基本要求">基本要求：</h2>
+<ul>
+<li>计时范围0'0.0'' ~ 9'59.9''，分辨率为<span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.05ex;" xmlns="http://www.w3.org/2000/svg" width="3.952ex" height="1.557ex" role="img" focusable="false" viewbox="0 -666 1747 688"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"/><path data-c="2E" d="M78 60Q78 84 95 102T138 120Q162 120 180 104T199 61Q199 36 182 18T139 0T96 17T78 60Z" transform="translate(500,0)"/><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z" transform="translate(778,0)"/></g><g data-mml-node="mi" transform="translate(1278,0)"><path data-c="1D460" d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"/></g></g></g></svg></mjx-container></span>用数码管显示计数值。</li>
+<li>秒表设有一个功能按键开关 <code>ButtonIn</code>。<br>
+当电路处于“初始”状态时，第一次按键，开始自动计时；再次按键，停止计时；第三次按键，计数器自动复位<span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.05ex;" xmlns="http://www.w3.org/2000/svg" width="5.718ex" height="1.835ex" role="img" focusable="false" viewbox="0 -789 2527.4 811"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msup"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"/></g><g data-mml-node="mo" transform="translate(533,363) scale(0.707)"><path data-c="2032" d="M79 43Q73 43 52 49T30 61Q30 68 85 293T146 528Q161 560 198 560Q218 560 240 545T262 501Q262 496 260 486Q259 479 173 263T84 45T79 43Z"/></g></g><g data-mml-node="msup" transform="translate(777.5,0)"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"/><path data-c="2E" d="M78 60Q78 84 95 102T138 120Q162 120 180 104T199 61Q199 36 182 18T139 0T96 17T78 60Z" transform="translate(500,0)"/><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z" transform="translate(778,0)"/></g><g data-mml-node="mo" transform="translate(1311,393.1) scale(0.707)"><g data-c="2033"><path data-c="2032" d="M79 43Q73 43 52 49T30 61Q30 68 85 293T146 528Q161 560 198 560Q218 560 240 545T262 501Q262 496 260 486Q259 479 173 263T84 45T79 43Z"/><path data-c="2032" d="M79 43Q73 43 52 49T30 61Q30 68 85 293T146 528Q161 560 198 560Q218 560 240 545T262 501Q262 496 260 486Q259 479 173 263T84 45T79 43Z" transform="translate(275,0)"/></g></g></g></g></g></svg></mjx-container></span>，即电路恢复初始状态。<br>
+## 个性化要求<br>
+设计的秒表具有“双计时”功能，纪要记录甲、乙两物体同时出发，但不同时到达终点的时间，并假设甲先到达终点，功能要求如下：</li>
 </ul>
-<h2 id="个性化要求"><a href="#个性化要求" class="headerlink" title="个性化要求"></a>个性化要求</h2><p>设计的秒表具有“双计时”功能，纪要记录甲、乙两物体同时出发，但不同时到达终点的时间，并假设甲先到达终点，功能要求如下：</p>
-<p>当电路处于“初始”状态时，第一次按键，开始自动计时；待甲到达终点时再按一下，此时是甲物体的计时值保存下来，但计时并未停止，内部电路仍在继续为乙物体积累及时；当乙物体到达终点时，第三次按键，停止计时，此时可记录并显示乙物体的计数值；第四次按键将保存下来的甲物体计数值显示出来；第五次按键，计数器自动复位为$0’0.0’’$，即秒表回到“初始”状态。</p>
-<h1 id="实验原理："><a href="#实验原理：" class="headerlink" title="实验原理："></a>实验原理：</h1><p>根据设计的基本要求，可画出秒表电路的原理框图。如所示，秒表电路由分频电路、按键处理模块、控制器、计时模块、动态显示模块组成。</p>
-<p><img src="6.jpg" alt="原理框图"><br>分频器模块产生其他模块需要的脉冲信号，其中输出的<code>pulse400Hz</code>信号是频率为$400H z$，宽度为一个<code>clk</code>周期的脉冲信号，该信号用于动态显示扫描模块。而<code>pulse10Hz</code>信号是频率为$10H z$，宽度为一个<code>clk</code>周期的脉冲信号，该信号为秒表的计时基准信号。</p>
+<p>当电路处于“初始”状态时，第一次按键，开始自动计时；待甲到达终点时再按一下，此时是甲物体的计时值保存下来，但计时并未停止，内部电路仍在继续为乙物体积累及时；当乙物体到达终点时，第三次按键，停止计时，此时可记录并显示乙物体的计数值；第四次按键将保存下来的甲物体计数值显示出来；第五次按键，计数器自动复位为<span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.05ex;" xmlns="http://www.w3.org/2000/svg" width="5.718ex" height="1.835ex" role="img" focusable="false" viewbox="0 -789 2527.4 811"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msup"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"/></g><g data-mml-node="mo" transform="translate(533,363) scale(0.707)"><path data-c="2032" d="M79 43Q73 43 52 49T30 61Q30 68 85 293T146 528Q161 560 198 560Q218 560 240 545T262 501Q262 496 260 486Q259 479 173 263T84 45T79 43Z"/></g></g><g data-mml-node="msup" transform="translate(777.5,0)"><g data-mml-node="mn"><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"/><path data-c="2E" d="M78 60Q78 84 95 102T138 120Q162 120 180 104T199 61Q199 36 182 18T139 0T96 17T78 60Z" transform="translate(500,0)"/><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z" transform="translate(778,0)"/></g><g data-mml-node="mo" transform="translate(1311,393.1) scale(0.707)"><g data-c="2033"><path data-c="2032" d="M79 43Q73 43 52 49T30 61Q30 68 85 293T146 528Q161 560 198 560Q218 560 240 545T262 501Q262 496 260 486Q259 479 173 263T84 45T79 43Z"/><path data-c="2032" d="M79 43Q73 43 52 49T30 61Q30 68 85 293T146 528Q161 560 198 560Q218 560 240 545T262 501Q262 496 260 486Q259 479 173 263T84 45T79 43Z" transform="translate(275,0)"/></g></g></g></g></g></svg></mjx-container></span>，即秒表回到“初始”状态。<br>
+# 实验原理：<br>
+根据设计的基本要求，可画出秒表电路的原理框图。如所示，秒表电路由分频电路、按键处理模块、控制器、计时模块、动态显示模块组成。</p>
+<p><img src="6.jpg" alt="原理框图"><br>
+分频器模块产生其他模块需要的脉冲信号，其中输出的<code>pulse400Hz</code>信号是频率为<span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.05ex;" xmlns="http://www.w3.org/2000/svg" width="6.455ex" height="1.595ex" role="img" focusable="false" viewbox="0 -683 2853 705"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="34" d="M462 0Q444 3 333 3Q217 3 199 0H190V46H221Q241 46 248 46T265 48T279 53T286 61Q287 63 287 115V165H28V211L179 442Q332 674 334 675Q336 677 355 677H373L379 671V211H471V165H379V114Q379 73 379 66T385 54Q393 47 442 46H471V0H462ZM293 211V545L74 212L183 211H293Z"/><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z" transform="translate(500,0)"/><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z" transform="translate(1000,0)"/></g><g data-mml-node="mi" transform="translate(1500,0)"><path data-c="1D43B" d="M228 637Q194 637 192 641Q191 643 191 649Q191 673 202 682Q204 683 219 683Q260 681 355 681Q389 681 418 681T463 682T483 682Q499 682 499 672Q499 670 497 658Q492 641 487 638H485Q483 638 480 638T473 638T464 637T455 637Q416 636 405 634T387 623Q384 619 355 500Q348 474 340 442T328 395L324 380Q324 378 469 378H614L615 381Q615 384 646 504Q674 619 674 627T617 637Q594 637 587 639T580 648Q580 650 582 660Q586 677 588 679T604 682Q609 682 646 681T740 680Q802 680 835 681T871 682Q888 682 888 672Q888 645 876 638H874Q872 638 869 638T862 638T853 637T844 637Q805 636 794 634T776 623Q773 618 704 340T634 58Q634 51 638 51Q646 48 692 46H723Q729 38 729 37T726 19Q722 6 716 0H701Q664 2 567 2Q533 2 504 2T458 2T437 1Q420 1 420 10Q420 15 423 24Q428 43 433 45Q437 46 448 46H454Q481 46 514 49Q520 50 522 50T528 55T534 64T540 82T547 110T558 153Q565 181 569 198Q602 330 602 331T457 332H312L279 197Q245 63 245 58Q245 51 253 49T303 46H334Q340 38 340 37T337 19Q333 6 327 0H312Q275 2 178 2Q144 2 115 2T69 2T48 1Q31 1 31 10Q31 12 34 24Q39 43 44 45Q48 46 59 46H65Q92 46 125 49Q139 52 144 61Q147 65 216 339T285 628Q285 635 228 637Z"/></g><g data-mml-node="mi" transform="translate(2388,0)"><path data-c="1D467" d="M347 338Q337 338 294 349T231 360Q211 360 197 356T174 346T162 335T155 324L153 320Q150 317 138 317Q117 317 117 325Q117 330 120 339Q133 378 163 406T229 440Q241 442 246 442Q271 442 291 425T329 392T367 375Q389 375 411 408T434 441Q435 442 449 442H462Q468 436 468 434Q468 430 463 420T449 399T432 377T418 358L411 349Q368 298 275 214T160 106L148 94L163 93Q185 93 227 82T290 71Q328 71 360 90T402 140Q406 149 409 151T424 153Q443 153 443 143Q443 138 442 134Q425 72 376 31T278 -11Q252 -11 232 6T193 40T155 57Q111 57 76 -3Q70 -11 59 -11H54H41Q35 -5 35 -2Q35 13 93 84Q132 129 225 214T340 322Q352 338 347 338Z"/></g></g></g></svg></mjx-container></span>，宽度为一个<code>clk</code>周期的脉冲信号，该信号用于动态显示扫描模块。而<code>pulse10Hz</code>信号是频率为<span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.05ex;" xmlns="http://www.w3.org/2000/svg" width="5.324ex" height="1.595ex" role="img" focusable="false" viewbox="0 -683 2353 705"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mn"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z" transform="translate(500,0)"/></g><g data-mml-node="mi" transform="translate(1000,0)"><path data-c="1D43B" d="M228 637Q194 637 192 641Q191 643 191 649Q191 673 202 682Q204 683 219 683Q260 681 355 681Q389 681 418 681T463 682T483 682Q499 682 499 672Q499 670 497 658Q492 641 487 638H485Q483 638 480 638T473 638T464 637T455 637Q416 636 405 634T387 623Q384 619 355 500Q348 474 340 442T328 395L324 380Q324 378 469 378H614L615 381Q615 384 646 504Q674 619 674 627T617 637Q594 637 587 639T580 648Q580 650 582 660Q586 677 588 679T604 682Q609 682 646 681T740 680Q802 680 835 681T871 682Q888 682 888 672Q888 645 876 638H874Q872 638 869 638T862 638T853 637T844 637Q805 636 794 634T776 623Q773 618 704 340T634 58Q634 51 638 51Q646 48 692 46H723Q729 38 729 37T726 19Q722 6 716 0H701Q664 2 567 2Q533 2 504 2T458 2T437 1Q420 1 420 10Q420 15 423 24Q428 43 433 45Q437 46 448 46H454Q481 46 514 49Q520 50 522 50T528 55T534 64T540 82T547 110T558 153Q565 181 569 198Q602 330 602 331T457 332H312L279 197Q245 63 245 58Q245 51 253 49T303 46H334Q340 38 340 37T337 19Q333 6 327 0H312Q275 2 178 2Q144 2 115 2T69 2T48 1Q31 1 31 10Q31 12 34 24Q39 43 44 45Q48 46 59 46H65Q92 46 125 49Q139 52 144 61Q147 65 216 339T285 628Q285 635 228 637Z"/></g><g data-mml-node="mi" transform="translate(1888,0)"><path data-c="1D467" d="M347 338Q337 338 294 349T231 360Q211 360 197 356T174 346T162 335T155 324L153 320Q150 317 138 317Q117 317 117 325Q117 330 120 339Q133 378 163 406T229 440Q241 442 246 442Q271 442 291 425T329 392T367 375Q389 375 411 408T434 441Q435 442 449 442H462Q468 436 468 434Q468 430 463 420T449 399T432 377T418 358L411 349Q368 298 275 214T160 106L148 94L163 93Q185 93 227 82T290 71Q328 71 360 90T402 140Q406 149 409 151T424 153Q443 153 443 143Q443 138 442 134Q425 72 376 31T278 -11Q252 -11 232 6T193 40T155 57Q111 57 76 -3Q70 -11 59 -11H54H41Q35 -5 35 -2Q35 13 93 84Q132 129 225 214T340 322Q352 338 347 338Z"/></g></g></g></svg></mjx-container></span>，宽度为一个<code>clk</code>周期的脉冲信号，该信号为秒表的计时基准信号。</p>
 <p>按键处理模块完成按键输入的同步器、开关防颤动和脉冲宽度变换等功能，即当按键一次，输出一个宽度为<code>clk</code>周期的脉冲信号<code>ButtonOut</code>。</p>
 <p>计时模块可由一个十进制计数器（十分之一秒计时）、一个六十进制BCD码秒计数器和一个十进制分计数器级联构成。</p>
-<p>控制器是电路的核心，在按键控制下输出信号，具体实现在下文阐述。<br>显示采用数码管动态显示技术，由于仅在第二位显示小数点，本实验中采用<code>dp=pos[1]</code>进行小数点显示的赋值。</p>
-<h1 id="实验步骤："><a href="#实验步骤：" class="headerlink" title="实验步骤："></a>实验步骤：</h1><h2 id="分频器模块"><a href="#分频器模块" class="headerlink" title="分频器模块"></a>分频器模块</h2><p>分频器是一种通过降低输入信号频率来产生较低频率输出信号的电路。它的基本原理是利用计数器来计数输入信号的周期数，当计数器达到预定的值时，输出信号翻转一次。通过这种方式，输入信号的频率被按预定的比例降低，即实现了分频功能。</p>
-<h3 id="分频器的工作原理"><a href="#分频器的工作原理" class="headerlink" title="分频器的工作原理"></a>分频器的工作原理</h3><ul>
+<p>控制器是电路的核心，在按键控制下输出信号，具体实现在下文阐述。<br>
+显示采用数码管动态显示技术，由于仅在第二位显示小数点，本实验中采用<code>dp=pos[1]</code>进行小数点显示的赋值。</p>
+<h1 id="实验步骤">实验步骤：</h1>
+<h2 id="分频器模块">分频器模块</h2>
+<p>分频器是一种通过降低输入信号频率来产生较低频率输出信号的电路。它的基本原理是利用计数器来计数输入信号的周期数，当计数器达到预定的值时，输出信号翻转一次。通过这种方式，输入信号的频率被按预定的比例降低，即实现了分频功能。</p>
+<h3 id="分频器的工作原理">分频器的工作原理</h3>
+<ul>
 <li>输入信号：分频器接收一个高频的输入信号，例如时钟信号。</li>
 <li>计数器：计数器是分频器的核心元件，它用于记录输入信号的周期数。计数器通常由触发器组成，每个触发器代表一个计数位。</li>
-<li>计数过程：<ul>
+<li>计数过程：
+<ul>
 <li>计数器每接收到一个输入信号的上升沿或下降沿，计数器的值增加。</li>
-<li>当计数器的值达到预定的计数值（例如 𝑁）计数器复位并重新开始计数，同时输出信号翻转一次。</li>
+<li>当计数器的值达到预定的计数值（例如
+𝑁）计数器复位并重新开始计数，同时输出信号翻转一次。</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h2 id="按键处理模块"><a href="#按键处理模块" class="headerlink" title="按键处理模块"></a>按键处理模块</h2><h3 id="D触发器模块"><a href="#D触发器模块" class="headerlink" title="D触发器模块"></a>D触发器模块</h3><ul>
+<h3 id="分频器的verilog实现">分频器的verilog实现：</h3>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义一个名为counter_n的模块，用于实现可配置的计数器</span></span><br><span class="line"><span class="keyword">module</span> counter_n (</span><br><span class="line">    <span class="keyword">input</span> clk,     <span class="comment">// 时钟信号输入</span></span><br><span class="line">    <span class="keyword">input</span> en,      <span class="comment">// 使能信号输入，当有效时开始计数</span></span><br><span class="line">    <span class="keyword">input</span> r,       <span class="comment">// 复位信号输入，用于将计数器清零</span></span><br><span class="line">    <span class="keyword">output</span> co      <span class="comment">// 计数完成信号输出，当计数达到n-1时置高</span></span><br><span class="line">);</span><br><span class="line">    <span class="keyword">parameter</span> n = <span class="number">2</span>;               <span class="comment">// 分频比，计数器的最大计数值</span></span><br><span class="line">    <span class="keyword">parameter</span> counter_bits = <span class="number">1</span>;    <span class="comment">// 计数器位宽，根据n确定</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">reg</span> [counter_bits-<span class="number">1</span>:<span class="number">0</span>] q = <span class="number">0</span>;  <span class="comment">// 计数器寄存器，初始值为0</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 输出计数完成信号，当计数器达到n-1并且使能信号有效时输出高电平</span></span><br><span class="line">    <span class="keyword">assign</span> co = (q == (n - <span class="number">1</span>)) &amp;&amp; en;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 总是块，在时钟上升沿或复位信号有效时更新计数器</span></span><br><span class="line">    <span class="keyword">always</span> @(<span class="keyword">posedge</span> clk) <span class="keyword">begin</span></span><br><span class="line">        <span class="keyword">if</span> (r) <span class="keyword">begin</span></span><br><span class="line">            q = <span class="number">0</span>; <span class="comment">// 如果复位信号有效，则将计数器清零</span></span><br><span class="line">        <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">if</span> (en) <span class="keyword">begin</span></span><br><span class="line">            <span class="keyword">if</span> (q == (n - <span class="number">1</span>)) <span class="keyword">begin</span></span><br><span class="line">                q = <span class="number">0</span>; <span class="comment">// 如果计数器达到n-1，则清零计数器</span></span><br><span class="line">            <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">begin</span></span><br><span class="line">                q = q + <span class="number">1</span>; <span class="comment">// 否则，计数器加1</span></span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">endmodule</span></span><br></pre></td></tr></table></figure>
+<h2 id="按键处理模块">按键处理模块</h2>
+<h3 id="d触发器模块">D触发器模块</h3>
+<ul>
 <li><strong>功能</strong>：在时钟上升沿或复位信号有效时存储数据</li>
+<li><strong>实现</strong>：<br>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义一个名为dffer的D触发器模块，用于在时钟上升沿或复位信号有效时存储数据</span></span><br><span class="line"><span class="keyword">module</span> dffer (</span><br><span class="line">    <span class="keyword">input</span> d,        <span class="comment">// 数据输入信号</span></span><br><span class="line">    <span class="keyword">input</span> clk,      <span class="comment">// 时钟信号输入</span></span><br><span class="line">    <span class="keyword">input</span> r,        <span class="comment">// 复位信号输入，用于将输出信号复位为0</span></span><br><span class="line">    <span class="keyword">input</span> en,       <span class="comment">// 使能信号输入，当使能有效时允许数据输入被存储</span></span><br><span class="line">    <span class="keyword">output</span> <span class="keyword">reg</span> q    <span class="comment">// 输出信号，用于存储和输出数据</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化块，在仿真开始时将输出信号q设置为0</span></span><br><span class="line">    <span class="keyword">initial</span> <span class="keyword">begin</span></span><br><span class="line">        q = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 总是块，在时钟上升沿或复位信号有效时触发</span></span><br><span class="line">    <span class="keyword">always</span> @(<span class="keyword">posedge</span> clk <span class="keyword">or</span> <span class="keyword">posedge</span> r) <span class="keyword">begin</span></span><br><span class="line">        <span class="keyword">if</span> (r)</span><br><span class="line">            q = <span class="number">0</span>;         <span class="comment">// 如果复位信号有效，则将输出信号q复位为0</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (en)</span><br><span class="line">            q = d;         <span class="comment">// 如果使能信号有效，则将输入信号d存储到输出信号q</span></span><br><span class="line">        <span class="comment">// 未使能时保持当前状态</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">endmodule</span></span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
 </ul>
-<h3 id="synchronizer-模块"><a href="#synchronizer-模块" class="headerlink" title="synchronizer 模块"></a><code>synchronizer</code> 模块</h3><ul>
+<h3 id="synchronizer-模块"><code>synchronizer</code> 模块</h3>
+<ul>
 <li><strong>功能</strong>：将异步输入信号同步到时钟域，确保信号在时钟上升沿时稳定。</li>
 <li><strong>组成</strong>：使用两个D触发器级联的方式实现信号同步。</li>
+<li><strong>实现</strong>：<br>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义一个名为synchronizer的模块，用于将异步输入信号同步到时钟域</span></span><br><span class="line"><span class="keyword">module</span> synchronizer (</span><br><span class="line">    <span class="keyword">input</span> asynch_in,   <span class="comment">// 异步输入信号</span></span><br><span class="line">    <span class="keyword">input</span> clk,         <span class="comment">// 时钟信号输入</span></span><br><span class="line">    <span class="keyword">output</span> synch_out   <span class="comment">// 同步后的输出信号</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">wire</span> q1; <span class="comment">// 中间信号，用于存储第一级D触发器的输出</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 实例化第一级D触发器，用于同步异步输入信号的第一级</span></span><br><span class="line">    dffer dffer_inst1(</span><br><span class="line">        <span class="variable">.d</span>(asynch_in), <span class="comment">// 连接异步输入信号</span></span><br><span class="line">        <span class="variable">.clk</span>(clk),     <span class="comment">// 连接时钟信号</span></span><br><span class="line">        <span class="variable">.r</span>(<span class="number">1'b0</span>),      <span class="comment">// 复位信号，保持为0</span></span><br><span class="line">        <span class="variable">.q</span>(q1),        <span class="comment">// 连接到中间信号</span></span><br><span class="line">        <span class="variable">.en</span>(<span class="number">1'b1</span>)      <span class="comment">// 使能信号，保持为1</span></span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 实例化第二级D触发器，用于同步异步输入信号的第二级</span></span><br><span class="line">    dffer dffer_inst2(</span><br><span class="line">        <span class="variable">.d</span>(q1),        <span class="comment">// 连接第一级D触发器的输出信号</span></span><br><span class="line">        <span class="variable">.clk</span>(clk),     <span class="comment">// 连接时钟信号</span></span><br><span class="line">        <span class="variable">.r</span>(<span class="number">1'b0</span>),      <span class="comment">// 复位信号，保持为0</span></span><br><span class="line">        <span class="variable">.q</span>(synch_out), <span class="comment">// 连接到同步后的输出信号</span></span><br><span class="line">        <span class="variable">.en</span>(<span class="number">1'b1</span>)      <span class="comment">// 使能信号，保持为1</span></span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line"><span class="keyword">endmodule</span></span><br></pre></td></tr></table></figure></li>
 </ul>
-<h3 id="PulseWidth-conver-模块"><a href="#PulseWidth-conver-模块" class="headerlink" title="PulseWidth_conver 模块"></a><code>PulseWidth_conver</code> 模块</h3><ul>
+<h3 id="pulsewidth_conver-模块"><code>PulseWidth_conver</code> 模块</h3>
+<ul>
 <li><strong>功能</strong>：将去抖动后的信号转换为一个稳定的脉冲输出信号。</li>
 <li><strong>组成</strong>：使用D触发器存储输入信号状态并生成脉冲输出。</li>
+<li><strong>实现</strong>：<br>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义一个名为PulseWidth_conver的模块，用于将输入信号转换为脉冲输出信号</span></span><br><span class="line"><span class="keyword">module</span> PulseWidth_conver (</span><br><span class="line">    <span class="keyword">input</span> in,   <span class="comment">// 输入信号</span></span><br><span class="line">    <span class="keyword">input</span> clk,  <span class="comment">// 时钟信号输入</span></span><br><span class="line">    <span class="keyword">output</span> out  <span class="comment">// 输出脉冲信号</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">wire</span> q; <span class="comment">// 中间信号，用于存储第一级D触发器的输出</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 实例化第一级D触发器，用于存储输入信号的当前状态</span></span><br><span class="line">    dffer dffer_inst_1(</span><br><span class="line">        <span class="variable">.d</span>(in),    <span class="comment">// 连接输入信号</span></span><br><span class="line">        <span class="variable">.clk</span>(clk), <span class="comment">// 连接时钟信号</span></span><br><span class="line">        <span class="variable">.r</span>(<span class="number">1'b0</span>),  <span class="comment">// 复位信号，保持为0</span></span><br><span class="line">        <span class="variable">.q</span>(q),     <span class="comment">// 连接到中间信号</span></span><br><span class="line">        <span class="variable">.en</span>(<span class="number">1'b1</span>)  <span class="comment">// 使能信号，保持为1</span></span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 生成输出脉冲信号，当输入信号上升沿时输出高电平</span></span><br><span class="line">    <span class="keyword">assign</span> out = (in &amp;&amp; ~q);</span><br><span class="line"></span><br><span class="line"><span class="keyword">endmodule</span></span><br></pre></td></tr></table></figure></li>
 </ul>
-<h3 id="Button-controler-模块"><a href="#Button-controler-模块" class="headerlink" title="Button_controler 模块"></a><code>Button_controler</code> 模块</h3><ul>
+<h3 id="button_controler-模块"><code>Button_controler</code> 模块</h3>
+<ul>
 <li><strong>功能</strong>：处理按钮输入的控制逻辑，包括去抖动和状态控制。</li>
-<li><strong>实现</strong>：使用状态机控制按钮输入的去抖动和信号生成。</li>
+<li><strong>实现</strong>：使用状态机控制按钮输入的去抖动和信号生成。<br>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义一个名为Button_controler的模块，用于处理按钮输入控制逻辑</span></span><br><span class="line"><span class="keyword">module</span> Button_controler (</span><br><span class="line">    <span class="keyword">input</span> clk,        <span class="comment">// 时钟信号输入</span></span><br><span class="line">    <span class="keyword">input</span> in,         <span class="comment">// 按钮输入信号</span></span><br><span class="line">    <span class="keyword">input</span> reset,      <span class="comment">// 复位信号，用于重置状态机</span></span><br><span class="line">    <span class="keyword">input</span> timer_done, <span class="comment">// 计时完成信号，指示计时器完成一次计时周期</span></span><br><span class="line">    <span class="keyword">output</span> <span class="keyword">reg</span> out,   <span class="comment">// 按钮输出信号，指示按钮按下状态</span></span><br><span class="line">    <span class="keyword">output</span> <span class="keyword">reg</span> timer_clr <span class="comment">// 计时器清零信号，用于重置计时器</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义状态机的状态编码</span></span><br><span class="line">    <span class="keyword">localparam</span>  </span><br><span class="line">        LOW = <span class="number">4'b0001</span>,       <span class="comment">// LOW状态，初始状态</span></span><br><span class="line">        WAIT_HIGH = <span class="number">4'b0010</span>, <span class="comment">// WAIT_HIGH状态，等待按钮按下</span></span><br><span class="line">        HIGH = <span class="number">4'b0100</span>,      <span class="comment">// HIGH状态，按钮按下且计时完成</span></span><br><span class="line">        WAIT_LOW = <span class="number">4'b1000</span>;  <span class="comment">// WAIT_LOW状态，等待按钮松开</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">reg</span> [<span class="number">3</span>:<span class="number">0</span>] state; <span class="comment">// 状态机当前状态变量</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始块，用于设置初始状态</span></span><br><span class="line">    <span class="keyword">initial</span> <span class="keyword">begin</span></span><br><span class="line">        state = LOW; <span class="comment">// 初始化状态为LOW</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 状态机主逻辑，每个时钟上升沿触发</span></span><br><span class="line">    <span class="keyword">always</span> @(<span class="keyword">posedge</span> clk) <span class="keyword">begin</span></span><br><span class="line">        <span class="keyword">if</span>(reset) <span class="keyword">begin</span></span><br><span class="line">            state = LOW;   <span class="comment">// 重置状态机为初始状态</span></span><br><span class="line">            timer_clr = <span class="number">1</span>; <span class="comment">// 清零计时器</span></span><br><span class="line">            out = <span class="number">0</span>;       <span class="comment">// 清零输出信号</span></span><br><span class="line">        <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">begin</span></span><br><span class="line">            <span class="keyword">case</span> (state)</span><br><span class="line">                LOW: <span class="keyword">begin</span></span><br><span class="line">                    timer_clr = <span class="number">1</span>; <span class="comment">// 清零计时器</span></span><br><span class="line">                    out = <span class="number">0</span>;       <span class="comment">// 清零输出信号</span></span><br><span class="line">                    <span class="keyword">if</span> (in) <span class="keyword">begin</span></span><br><span class="line">                        state = WAIT_HIGH; <span class="comment">// 按钮按下，转至WAIT_HIGH状态</span></span><br><span class="line">                    <span class="keyword">end</span></span><br><span class="line">                <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">                WAIT_HIGH: <span class="keyword">begin</span></span><br><span class="line">                    timer_clr = <span class="number">0</span>; <span class="comment">// 释放计时器清零信号，开始计时</span></span><br><span class="line">                    out = <span class="number">1</span>;       <span class="comment">// 设置输出信号</span></span><br><span class="line">                    <span class="keyword">if</span>(timer_done) <span class="keyword">begin</span></span><br><span class="line">                        state = HIGH; <span class="comment">// 计时完成，转至HIGH状态</span></span><br><span class="line">                    <span class="keyword">end</span></span><br><span class="line">                <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">                HIGH: <span class="keyword">begin</span></span><br><span class="line">                    timer_clr = <span class="number">1</span>; <span class="comment">// 清零计时器</span></span><br><span class="line">                    out = <span class="number">1</span>;       <span class="comment">// 维持输出信号</span></span><br><span class="line">                    <span class="keyword">if</span>(!in) <span class="keyword">begin</span></span><br><span class="line">                        state = WAIT_LOW; <span class="comment">// 按钮松开，转至WAIT_LOW状态</span></span><br><span class="line">                    <span class="keyword">end</span></span><br><span class="line">                <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">                WAIT_LOW: <span class="keyword">begin</span></span><br><span class="line">                    timer_clr = <span class="number">0</span>; <span class="comment">// 释放计时器清零信号，开始计时</span></span><br><span class="line">                    out = <span class="number">1</span>;       <span class="comment">// 维持输出信号</span></span><br><span class="line">                    <span class="keyword">if</span>(timer_done) <span class="keyword">begin</span></span><br><span class="line">                        state = LOW; <span class="comment">// 计时完成，转至LOW状态，完成一次按钮输入过程</span></span><br><span class="line">                    <span class="keyword">end</span></span><br><span class="line">                <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">                <span class="keyword">default</span>: <span class="keyword">begin</span></span><br><span class="line">                    state = LOW;   <span class="comment">// 默认状态为LOW，处理未知状态</span></span><br><span class="line">                    timer_clr = <span class="number">1</span>; <span class="comment">// 清零计时器</span></span><br><span class="line">                    out = <span class="number">0</span>;       <span class="comment">// 清零输出信号</span></span><br><span class="line">                <span class="keyword">end</span></span><br><span class="line">            <span class="keyword">endcase</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">endmodule</span></span><br></pre></td></tr></table></figure></li>
 </ul>
-<h3 id="timer-模块"><a href="#timer-模块" class="headerlink" title="timer 模块"></a><code>timer</code> 模块</h3><ul>
+<h3 id="timer-模块"><code>timer</code> 模块</h3>
+<ul>
 <li><strong>功能</strong>：用于在使能信号有效时进行计时，并在计时完成时输出完成信号。该模块主要用于按钮去抖动过程中的时间控制。</li>
-<li><strong>实现</strong>：<ul>
+<li><strong>实现</strong>：
+<ul>
 <li>计时器在时钟上升沿和复位信号有效时更新计数器值。</li>
 <li>当使能信号有效时，计时器开始计时。</li>
 <li>当计数器达到预定周期时，输出计时完成信号并将计数器清零。</li>
-<li>可以通过计时器清零信号来手动重置计数器。</li>
+<li>可以通过计时器清零信号来手动重置计数器。<br>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义一个名为timer的计时器模块，用于在使能信号有效时进行计时，并在计时完成时输出完成信号</span></span><br><span class="line"><span class="keyword">module</span> timer #(</span><br><span class="line">    <span class="keyword">parameter</span> period = <span class="number">10</span>,        <span class="comment">// 计时周期</span></span><br><span class="line">    <span class="keyword">parameter</span> count_bits = <span class="number">4</span>      <span class="comment">// 计数器位宽</span></span><br><span class="line">)(</span><br><span class="line">    <span class="keyword">input</span> clk,        <span class="comment">// 时钟信号输入</span></span><br><span class="line">    <span class="keyword">input</span> en,         <span class="comment">// 使能信号输入，当有效时开始计时</span></span><br><span class="line">    <span class="keyword">input</span> timer_clr,  <span class="comment">// 计时器清零信号，当有效时清零计数器</span></span><br><span class="line">    <span class="keyword">output</span> <span class="keyword">reg</span> timer_done <span class="comment">// 计时完成信号输出，当计时结束时置高</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">reg</span> [count_bits - <span class="number">1</span>:<span class="number">0</span>] count; <span class="comment">// 计数器寄存器，用于记录当前计数值</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化块，在仿真开始时将计数器和计时完成信号清零</span></span><br><span class="line">    <span class="keyword">initial</span> <span class="keyword">begin</span></span><br><span class="line">        count = <span class="number">0</span>;</span><br><span class="line">        timer_done = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 总是块，在时钟上升沿触发</span></span><br><span class="line">    <span class="keyword">always</span> @(<span class="keyword">posedge</span> clk) <span class="keyword">begin</span></span><br><span class="line">        <span class="keyword">if</span> (en) <span class="keyword">begin</span></span><br><span class="line">            <span class="comment">// 如果计时器清零信号有效，则清零计数器和计时完成信号</span></span><br><span class="line">            <span class="keyword">if</span> (timer_clr) <span class="keyword">begin</span></span><br><span class="line">                timer_done = <span class="number">0</span>;</span><br><span class="line">                count = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">            <span class="comment">// 否则，进行计时操作</span></span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">begin</span></span><br><span class="line">                <span class="comment">// 如果计数器达到预定周期，则置高计时完成信号，并清零计数器</span></span><br><span class="line">                <span class="keyword">if</span> (count &gt;= period - <span class="number">1</span>) <span class="keyword">begin</span></span><br><span class="line">                    timer_done = <span class="number">1</span>;</span><br><span class="line">                    count = <span class="number">0</span>;</span><br><span class="line">                <span class="keyword">end</span></span><br><span class="line">                <span class="comment">// 否则，计数器加1</span></span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">begin</span></span><br><span class="line">                    count = count + <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">end</span></span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">endmodule</span></span><br></pre></td></tr></table></figure></li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h3 id="debouncer-模块"><a href="#debouncer-模块" class="headerlink" title="debouncer 模块"></a><code>debouncer</code> 模块</h3><ul>
+<h3 id="debouncer-模块"><code>debouncer</code> 模块</h3>
+<ul>
 <li><strong>功能</strong>：去抖动按钮输入信号，生成稳定的输出信号。</li>
 <li><strong>组成</strong>：使用计时器和按钮控制器实现信号的去抖动。</li>
+<li><strong>实现</strong>：<br>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义一个名为debouncer的模块，用于去抖动按钮输入信号</span></span><br><span class="line"><span class="keyword">module</span> debouncer #(<span class="keyword">parameter</span> sim = <span class="number">0</span>)( <span class="comment">// sim参数用于仿真环境下调整去抖动参数</span></span><br><span class="line">    <span class="keyword">input</span> clk,    <span class="comment">// 时钟信号输入</span></span><br><span class="line">    <span class="keyword">input</span> in,     <span class="comment">// 原始按钮输入信号</span></span><br><span class="line">    <span class="keyword">input</span> reset,  <span class="comment">// 复位信号输入，用于重置去抖动逻辑</span></span><br><span class="line">    <span class="keyword">output</span> out    <span class="comment">// 去抖动后的稳定按钮输出信号</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">wire</span> pulse1kHz; <span class="comment">// 1kHz脉冲信号，用于驱动计时器</span></span><br><span class="line">    <span class="keyword">wire</span> timer_clr; <span class="comment">// 计时器清零信号</span></span><br><span class="line">    <span class="keyword">wire</span> timer_done; <span class="comment">// 计时器完成信号</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 实例化分频器模块，用于生成1kHz脉冲信号</span></span><br><span class="line">    counter_n <span class="variable">#(.n(sim ? 32 : 100000), .counter_bits(sim ? 5 : 17))</span> </span><br><span class="line">        counter_n_inst (</span><br><span class="line">            <span class="variable">.clk</span>(clk), </span><br><span class="line">            <span class="variable">.en</span>(<span class="number">1'b1</span>), </span><br><span class="line">            <span class="variable">.r</span>(<span class="number">1'b0</span>), </span><br><span class="line">            <span class="variable">.co</span>(pulse1kHz)</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 实例化计时器模块，用于计时按钮稳定时间</span></span><br><span class="line">    timer <span class="variable">#(.period(10), .count_bits(5))</span> </span><br><span class="line">        timer_inst (</span><br><span class="line">            <span class="variable">.clk</span>(clk), </span><br><span class="line">            <span class="variable">.en</span>(pulse1kHz), </span><br><span class="line">            <span class="variable">.timer_clr</span>(timer_clr), </span><br><span class="line">            <span class="variable">.timer_done</span>(timer_done)</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 实例化Button_controler模块，用于控制按钮去抖动逻辑</span></span><br><span class="line">    Button_controler Button_controler_inst (</span><br><span class="line">            <span class="variable">.clk</span>(clk), </span><br><span class="line">            <span class="variable">.in</span>(in), </span><br><span class="line">            <span class="variable">.reset</span>(reset), </span><br><span class="line">            <span class="variable">.timer_clr</span>(timer_clr), </span><br><span class="line">            <span class="variable">.timer_done</span>(timer_done), </span><br><span class="line">            <span class="variable">.out</span>(out)</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line"><span class="keyword">endmodule</span></span><br></pre></td></tr></table></figure></li>
 </ul>
-<h2 id="计时模块"><a href="#计时模块" class="headerlink" title="计时模块"></a>计时模块</h2><h3 id="timing-counter-模块"><a href="#timing-counter-模块" class="headerlink" title="timing_counter 模块"></a><code>timing_counter</code> 模块</h3><ul>
+<h2 id="计时模块">计时模块</h2>
+<h3 id="timing_counter-模块"><code>timing_counter</code> 模块</h3>
+<ul>
 <li><strong>功能</strong>：实现可配置的计时器，用于十分之一秒、秒和分钟的计时。</li>
-<li><strong>组成</strong>：<ul>
-<li>使用参数 <code>n</code> 和 <code>counter_bits</code> 来配置计时器的最大计数值和计数器位宽。</li>
+<li><strong>组成</strong>：
+<ul>
+<li>使用参数 <code>n</code> 和 <code>counter_bits</code>
+来配置计时器的最大计数值和计数器位宽。</li>
 <li>在每个时钟上升沿更新计数器值，当计数器达到最大计数值时发出计数完成信号，并将计数器清零。</li>
+</ul></li>
+<li><strong>实现</strong>：<br>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义一个名为timing_counter的模块，用于实现可配置的计时器</span></span><br><span class="line"><span class="keyword">module</span> timing_counter #(</span><br><span class="line">    <span class="keyword">parameter</span> n = <span class="number">10</span>,              <span class="comment">// 计数器的最大计数值</span></span><br><span class="line">    <span class="keyword">parameter</span> counter_bits = <span class="number">4</span>     <span class="comment">// 计数器位宽，根据n确定</span></span><br><span class="line">)(</span><br><span class="line">    <span class="keyword">input</span> en,        <span class="comment">// 使能信号输入，当有效时开始计时</span></span><br><span class="line">    <span class="keyword">input</span> clk,       <span class="comment">// 时钟信号输入</span></span><br><span class="line">    <span class="keyword">input</span> r,         <span class="comment">// 复位信号输入，用于将计数器清零</span></span><br><span class="line">    <span class="keyword">output</span> co,       <span class="comment">// 计数完成信号输出，当计数达到n-1时置高</span></span><br><span class="line">    <span class="keyword">output</span> <span class="keyword">reg</span> [counter_bits-<span class="number">1</span> : <span class="number">0</span>] q = <span class="number">0</span> <span class="comment">// 计数器寄存器，初始值为0</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 输出计数完成信号，当计数器达到n-1并且使能信号有效时输出高电平</span></span><br><span class="line">    <span class="keyword">assign</span> co = (q == (n - <span class="number">1</span>)) &amp;&amp; en;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 总是块，在时钟上升沿或复位信号有效时更新计数器</span></span><br><span class="line">    <span class="keyword">always</span> @(<span class="keyword">posedge</span> clk) <span class="keyword">begin</span></span><br><span class="line">        <span class="keyword">if</span> (r) <span class="keyword">begin</span></span><br><span class="line">            q = <span class="number">0</span>; <span class="comment">// 如果复位信号有效，则将计数器清零</span></span><br><span class="line">        <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">if</span> (en) <span class="keyword">begin</span></span><br><span class="line">            <span class="keyword">if</span> (q == (n - <span class="number">1</span>)) <span class="keyword">begin</span></span><br><span class="line">                q = <span class="number">0</span>; <span class="comment">// 如果计数器达到n-1，则清零计数器</span></span><br><span class="line">            <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">begin</span></span><br><span class="line">                q = q + <span class="number">1'b1</span>; <span class="comment">// 否则，计数器加1</span></span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">endmodule</span></span><br></pre></td></tr></table></figure></li>
 </ul>
-</li>
-</ul>
-<h3 id="bin2bcd-模块"><a href="#bin2bcd-模块" class="headerlink" title="bin2bcd 模块"></a><code>bin2bcd</code> 模块</h3><ul>
+<h3 id="bin2bcd-模块"><code>bin2bcd</code> 模块</h3>
+<ul>
 <li><strong>功能</strong>：将二进制计数值转换为BCD码，用于数码管显示。</li>
-<li><strong>实现</strong>：使用双重加三算法（Double Dabble）将8位二进制输入转换为两个4位BCD输出，分别表示十位和个位。</li>
+<li><strong>实现</strong>：使用双重加三算法（Double
+Dabble）将8位二进制输入转换为两个4位BCD输出，分别表示十位和个位。</li>
 </ul>
-<h3 id="timing-模块"><a href="#timing-模块" class="headerlink" title="timing 模块"></a><code>timing</code> 模块</h3><ul>
+<h3 id="timing-模块"><code>timing</code> 模块</h3>
+<ul>
 <li><strong>功能</strong>：实现多级计时器，并记录两个物体的计时值。</li>
-<li><strong>组成</strong>：<ul>
-<li>使用三个 <code>timing_counter</code> 实现十分之一秒、秒和分钟的计时。</li>
+<li><strong>组成</strong>：
+<ul>
+<li>使用三个 <code>timing_counter</code>
+实现十分之一秒、秒和分钟的计时。</li>
 <li>使用 <code>bin2bcd</code> 模块将秒计数值转换为BCD码。</li>
-<li>在 <code>save_first</code> 信号有效时记录第一个物体的计时值，在 <code>save_second</code> 信号有效时记录第二个物体的计时值。</li>
+<li>在 <code>save_first</code> 信号有效时记录第一个物体的计时值，在
+<code>save_second</code> 信号有效时记录第二个物体的计时值。</li>
+</ul></li>
+<li><strong>实现</strong>：<br>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> timing (</span><br><span class="line">    <span class="keyword">input</span> clk,   <span class="comment">// 时钟信号输入</span></span><br><span class="line">    <span class="keyword">input</span> r,     <span class="comment">// 复位信号输入，用于复位所有计时器</span></span><br><span class="line">    <span class="keyword">input</span> en,    <span class="comment">// 使能信号输入，用于启动十分之一秒计时器</span></span><br><span class="line">    <span class="keyword">input</span> save_first, <span class="comment">// 保存first计时值信号</span></span><br><span class="line">    <span class="keyword">input</span> save_second, <span class="comment">// 保存second计时值信号</span></span><br><span class="line">    <span class="keyword">output</span> [<span class="number">3</span>:<span class="number">0</span>] q0,   <span class="comment">// 十分之一秒计时器输出</span></span><br><span class="line">    <span class="keyword">output</span> [<span class="number">7</span>:<span class="number">0</span>] qs,   <span class="comment">// 秒位计时器输出（不转换为BCD码）</span></span><br><span class="line">    <span class="keyword">output</span> [<span class="number">3</span>:<span class="number">0</span>] qm,   <span class="comment">// 分位计时器输出</span></span><br><span class="line">    <span class="keyword">output</span> <span class="keyword">reg</span> [<span class="number">15</span>:<span class="number">0</span>] time_first, <span class="comment">// 保存的first计时值</span></span><br><span class="line">    <span class="keyword">output</span> <span class="keyword">reg</span> [<span class="number">15</span>:<span class="number">0</span>] time_second  <span class="comment">// 保存的second计时值</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">wire</span> q0_to_qs; <span class="comment">// 十分之一秒计时器到秒位计时器的中间信号</span></span><br><span class="line">    <span class="keyword">wire</span> qs_to_qm; <span class="comment">// 秒位计时器到分位计时器的中间信号</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建十分之一秒计时器</span></span><br><span class="line">    timing_counter <span class="variable">#(.n(10), .counter_bits(4))</span> </span><br><span class="line">    timing_counter_q0 (</span><br><span class="line">        <span class="variable">.en</span>(en),        <span class="comment">// 使能信号</span></span><br><span class="line">        <span class="variable">.clk</span>(clk),      <span class="comment">// 时钟信号</span></span><br><span class="line">        <span class="variable">.r</span>(r),          <span class="comment">// 复位信号</span></span><br><span class="line">        <span class="variable">.co</span>(q0_to_qs),  <span class="comment">// 计数完成信号，连接到秒位计时器</span></span><br><span class="line">        <span class="variable">.q</span>(q0)          <span class="comment">// 十分之一秒计时器输出</span></span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建秒位二进制计时器</span></span><br><span class="line">    timing_counter <span class="variable">#(.n(60), .counter_bits(8))</span> </span><br><span class="line">    timing_counter_qs (</span><br><span class="line">        <span class="variable">.en</span>(q0_to_qs),  <span class="comment">// 使能信号，由十分之一秒计时器的计数完成信号驱动</span></span><br><span class="line">        <span class="variable">.clk</span>(clk),      <span class="comment">// 时钟信号</span></span><br><span class="line">        <span class="variable">.r</span>(r),          <span class="comment">// 复位信号</span></span><br><span class="line">        <span class="variable">.co</span>(qs_to_qm),  <span class="comment">// 计数完成信号，连接到分位计时器</span></span><br><span class="line">        <span class="variable">.q</span>(qs)          <span class="comment">// 秒位二进制计时器输出</span></span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建分位计时器</span></span><br><span class="line">    timing_counter <span class="variable">#(.n(10), .counter_bits(4))</span> </span><br><span class="line">    timing_counter_qm (</span><br><span class="line">        <span class="variable">.en</span>(qs_to_qm),  <span class="comment">// 使能信号，由秒位计时器的计数完成信号驱动</span></span><br><span class="line">        <span class="variable">.clk</span>(clk),      <span class="comment">// 时钟信号</span></span><br><span class="line">        <span class="variable">.r</span>(r),          <span class="comment">// 复位信号</span></span><br><span class="line">        <span class="variable">.co</span>(),          <span class="comment">// 未使用的计数完成信号</span></span><br><span class="line">        <span class="variable">.q</span>(qm)          <span class="comment">// 分位计时器输出</span></span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 保存first计时值</span></span><br><span class="line">    <span class="keyword">always</span> @(<span class="keyword">posedge</span> clk) <span class="keyword">begin</span></span><br><span class="line">        <span class="keyword">if</span> (save_first) <span class="keyword">begin</span></span><br><span class="line">            time_first &lt;= {qm, qs, q0};</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 保存second计时值</span></span><br><span class="line">    <span class="keyword">always</span> @(<span class="keyword">posedge</span> clk) <span class="keyword">begin</span></span><br><span class="line">        <span class="keyword">if</span> (save_second) <span class="keyword">begin</span></span><br><span class="line">            time_second &lt;= {qm, qs, q0};</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">endmodule</span></span><br></pre></td></tr></table></figure></li>
 </ul>
-</li>
-</ul>
-<h2 id="动态显示-display-模块"><a href="#动态显示-display-模块" class="headerlink" title="动态显示 display 模块"></a>动态显示 <code>display</code> 模块</h2><ul>
-<li><strong>功能</strong>：<ul>
-<li><code>display</code> 模块控制七段数码管的显示，用于显示当前计时值或保存的计时值。</li>
+<h2 id="动态显示-display-模块">动态显示 <code>display</code> 模块</h2>
+<ul>
+<li><strong>功能</strong>：
+<ul>
+<li><code>display</code>
+模块控制七段数码管的显示，用于显示当前计时值或保存的计时值。</li>
 <li>通过时钟驱动的计数器循环选择数码管位置，并将输入的BCD码转换为七段数码管的显示信号。</li>
-<li>根据 <code>show_first</code> 信号选择显示当前计时值或保存的计时值。</li>
-</ul>
-</li>
-<li><strong>组成</strong>：<ul>
+<li>根据 <code>show_first</code>
+信号选择显示当前计时值或保存的计时值。</li>
+</ul></li>
+<li><strong>组成</strong>：
+<ul>
 <li><strong>位选择逻辑</strong>：通过时钟驱动的计数器循环选择数码管位置。</li>
 <li><strong>数据选择器</strong>：选择当前需要显示的BCD码数据。</li>
 <li><strong>BCD码到七段数码管编码器</strong>：将BCD码转换为七段数码管的显示信号。</li>
+</ul></li>
+<li><strong>实现</strong>：<br>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> display (</span><br><span class="line">    <span class="keyword">input</span> clk,     <span class="comment">// 时钟信号输入</span></span><br><span class="line">    <span class="keyword">input</span> en,      <span class="comment">// 使能信号输入，当有效时开始计数和显示</span></span><br><span class="line">    <span class="keyword">input</span> show_first, <span class="comment">// 显示first计时值信号</span></span><br><span class="line">    <span class="keyword">input</span> show_second, <span class="comment">// 显示second计时值信号</span></span><br><span class="line">    <span class="keyword">input</span> [<span class="number">3</span>:<span class="number">0</span>] d0, d1, d2, d3, <span class="comment">// 当前计时值</span></span><br><span class="line">    <span class="keyword">input</span> [<span class="number">3</span>:<span class="number">0</span>] time_first_0, time_first_1, time_first_2, time_first_3, <span class="comment">// first的计时值</span></span><br><span class="line">    <span class="keyword">input</span> [<span class="number">3</span>:<span class="number">0</span>] time_second_0, time_second_1, time_second_2, time_second_3, <span class="comment">// second的计时值</span></span><br><span class="line">    <span class="keyword">output</span> <span class="keyword">reg</span> a, b, c, d, e, f, g, <span class="comment">// 七段显示器的输出</span></span><br><span class="line">    <span class="keyword">output</span> <span class="keyword">reg</span> [<span class="number">3</span>:<span class="number">0</span>] pos  <span class="comment">// 选择当前显示的位</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义变量</span></span><br><span class="line">    <span class="keyword">reg</span> [<span class="number">3</span>:<span class="number">0</span>] din;   <span class="comment">// 当前选择的显示数据</span></span><br><span class="line">    <span class="keyword">reg</span> [<span class="number">1</span>:<span class="number">0</span>] q = <span class="number">0</span>; <span class="comment">// 2位计数器，用于选择当前显示的位</span></span><br><span class="line">    <span class="keyword">reg</span> [<span class="number">1</span>:<span class="number">0</span>] d_temp, sel; <span class="comment">// 临时变量，用于选择器和译码器</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 计数器模块，用于循环选择显示的位</span></span><br><span class="line">    <span class="keyword">always</span> @(<span class="keyword">posedge</span> clk) <span class="keyword">begin</span></span><br><span class="line">        <span class="keyword">if</span> (en) <span class="keyword">begin</span></span><br><span class="line">            <span class="keyword">if</span> (q == <span class="number">3</span>)</span><br><span class="line">                q = <span class="number">0</span>; <span class="comment">// 如果计数器达到3，则重置为0</span></span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                q = q + <span class="number">1</span>; <span class="comment">// 否则计数器加1</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 数据选择器，用于选择当前需要显示的数据</span></span><br><span class="line">    <span class="keyword">always</span> @(*) <span class="keyword">begin</span></span><br><span class="line">        sel = q;</span><br><span class="line">        <span class="keyword">if</span> (show_first) <span class="keyword">begin</span></span><br><span class="line">            <span class="keyword">case</span> (sel)</span><br><span class="line">                <span class="number">2'b00</span>: din = time_first_0;</span><br><span class="line">                <span class="number">2'b01</span>: din = time_first_1;</span><br><span class="line">                <span class="number">2'b10</span>: din = time_first_2;</span><br><span class="line">                <span class="number">2'b11</span>: din = time_first_3;</span><br><span class="line">                <span class="keyword">default</span>: din = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">endcase</span></span><br><span class="line">        <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">if</span> (show_second) <span class="keyword">begin</span></span><br><span class="line">            <span class="keyword">case</span> (sel)</span><br><span class="line">                <span class="number">2'b00</span>: din = time_second_0;</span><br><span class="line">                <span class="number">2'b01</span>: din = time_second_1;</span><br><span class="line">                <span class="number">2'b10</span>: din = time_second_2;</span><br><span class="line">                <span class="number">2'b11</span>: din = time_second_3;</span><br><span class="line">                <span class="keyword">default</span>: din = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">endcase</span></span><br><span class="line">        <span class="keyword">end</span> <span class="keyword">else</span> <span class="keyword">begin</span></span><br><span class="line">            <span class="keyword">case</span> (sel)</span><br><span class="line">                <span class="number">2'b00</span>: din = d0;</span><br><span class="line">                <span class="number">2'b01</span>: din = d1;</span><br><span class="line">                <span class="number">2'b10</span>: din = d2;</span><br><span class="line">                <span class="number">2'b11</span>: din = d3;</span><br><span class="line">                <span class="keyword">default</span>: din = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">endcase</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2-4译码器，用于选择当前显示的位置</span></span><br><span class="line">    <span class="keyword">always</span> @(*) <span class="keyword">begin</span></span><br><span class="line">        d_temp = q;</span><br><span class="line">        <span class="keyword">case</span> (d_temp)</span><br><span class="line">            <span class="number">2'b00</span>: pos = <span class="number">4'b1110</span>; <span class="comment">// 选择第0位</span></span><br><span class="line">            <span class="number">2'b01</span>: pos = <span class="number">4'b1101</span>; <span class="comment">// 选择第1位</span></span><br><span class="line">            <span class="number">2'b10</span>: pos = <span class="number">4'b1011</span>; <span class="comment">// 选择第2位</span></span><br><span class="line">            <span class="number">2'b11</span>: pos = <span class="number">4'b0111</span>; <span class="comment">// 选择第3位</span></span><br><span class="line">            <span class="keyword">default</span>: pos = <span class="number">4'b0000</span>;</span><br><span class="line">        <span class="keyword">endcase</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 显示译码器，用于将BCD码转换为七段显示器的控制信号</span></span><br><span class="line">    <span class="keyword">always</span> @(*) <span class="keyword">begin</span></span><br><span class="line">        <span class="keyword">case</span> (din)</span><br><span class="line">            <span class="number">4'b0000</span>: {a, b, c, d, e, f, g} = <span class="number">7'b0000001</span>; <span class="comment">// 显示0</span></span><br><span class="line">            <span class="number">4'b0001</span>: {a, b, c, d, e, f, g} = <span class="number">7'b1001111</span>; <span class="comment">// 显示1</span></span><br><span class="line">            <span class="number">4'b0010</span>: {a, b, c, d, e, f, g} = <span class="number">7'b0010010</span>; <span class="comment">// 显示2</span></span><br><span class="line">            <span class="number">4'b0011</span>: {a, b, c, d, e, f, g} = <span class="number">7'b0000110</span>; <span class="comment">// 显示3</span></span><br><span class="line">            <span class="number">4'b0100</span>: {a, b, c, d, e, f, g} = <span class="number">7'b1001100</span>; <span class="comment">// 显示4</span></span><br><span class="line">            <span class="number">4'b0101</span>: {a, b, c, d, e, f, g} = <span class="number">7'b0100100</span>; <span class="comment">// 显示5</span></span><br><span class="line">            <span class="number">4'b0110</span>: {a, b, c, d, e, f, g} = <span class="number">7'b0100000</span>; <span class="comment">// 显示6</span></span><br><span class="line">            <span class="number">4'b0111</span>: {a, b, c, d, e, f, g} = <span class="number">7'b0001111</span>; <span class="comment">// 显示7</span></span><br><span class="line">            <span class="number">4'b1000</span>: {a, b, c, d, e, f, g} = <span class="number">7'b0000000</span>; <span class="comment">// 显示8</span></span><br><span class="line">            <span class="number">4'b1001</span>: {a, b, c, d, e, f, g} = <span class="number">7'b0000100</span>; <span class="comment">// 显示9</span></span><br><span class="line">            <span class="keyword">default</span>: {a, b, c, d, e, f, g} = <span class="number">7'b1111111</span>; <span class="comment">// 关闭显示</span></span><br><span class="line">        <span class="keyword">endcase</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">endmodule</span></span><br></pre></td></tr></table></figure></li>
 </ul>
-</li>
-</ul>
+</article><div class="post-copyright"><div class="post-copyright__author_group"><a class="post-copyright__author_img" href="/about/"><img class="post-copyright__author_img_front" src="/img/pwa/favicon.ico"></a><div class="post-copyright__author_name">Jiao-77的博客</div><div class="post-copyright__author_desc">记录生活，分享感悟</div></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div id="quit-box" onclick="RemoveRewardMask()"></div></div></div><div class="post-copyright__notice"><span class="post-copyright-info">本文是原创文章，采用<a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">CC BY-NC-SA 4.0</a>协议，完整转载请注明来自<a href="/">Jiao-77的博客</a></span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%95%B0%E5%AD%97%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E5%AE%9E%E9%AA%8C/"><span class="tags-punctuation"></span>数字系统设计实验<span class="tagsPageCount">1</span></a></div></div><div class="social-share"></div></div><nav class="needEndHide pagination-post" id="pagination"><div class="prev-post pull-full"><a href="/2024/06/09/%E5%85%89%E7%94%B5%E6%95%88%E5%BA%94%E6%89%A9%E5%B1%95%E5%AE%9E%E9%AA%8C/"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">光电效应扩展实验</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><div class="author-info__top-group"><div class="author-info__sayhi" id="author-info__sayhi" onclick="sco.changeSayHelloText()">sayhello.morning</div></div></div><div class="avatar-img-group"><img class="avatar-img" alt="头像" src="/img/avatar.png"><div class="avatar-sticker"><img class="avatar-sticker-img" src="https://7.isyangs.cn/34/65f2e4e0423cc-34.png" alt="心情贴纸"></div></div><div class="author-info__description_group"><div class="author-info__description">分享自己对编程的<b>热爱</b>，对美好生活的<b>向往</b>，对知识海洋<b>探索历程</b>。</div><div class="author-info__description2">相信你可以在这里找到对你有用的知识和教程。</div></div><div class="author-info__bottom-group"><a class="author-info__bottom-group-left" href="/about/"><div class="author-info__name">Jiao-77</div><div class="author-info__desc">记录生活，分享感悟</div></a><div class="card-info-social-icons is-center"></div></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="solitude st-menu-line"></i><span>文章目录</span></div><div class="toc-content" id="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%9B%AE%E7%9A%84"><span class="toc-text">实验目的：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E8%A6%81%E6%B1%82"><span class="toc-text">基本要求：</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E6%AD%A5%E9%AA%A4"><span class="toc-text">实验步骤：</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E9%A2%91%E5%99%A8%E6%A8%A1%E5%9D%97"><span class="toc-text">分频器模块</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E9%A2%91%E5%99%A8%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-text">分频器的工作原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E9%A2%91%E5%99%A8%E7%9A%84verilog%E5%AE%9E%E7%8E%B0"><span class="toc-text">分频器的verilog实现：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%89%E9%94%AE%E5%A4%84%E7%90%86%E6%A8%A1%E5%9D%97"><span class="toc-text">按键处理模块</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#d%E8%A7%A6%E5%8F%91%E5%99%A8%E6%A8%A1%E5%9D%97"><span class="toc-text">D触发器模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#synchronizer-%E6%A8%A1%E5%9D%97"><span class="toc-text">synchronizer 模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pulsewidth_conver-%E6%A8%A1%E5%9D%97"><span class="toc-text">PulseWidth_conver 模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#button_controler-%E6%A8%A1%E5%9D%97"><span class="toc-text">Button_controler 模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#timer-%E6%A8%A1%E5%9D%97"><span class="toc-text">timer 模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#debouncer-%E6%A8%A1%E5%9D%97"><span class="toc-text">debouncer 模块</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%A1%E6%97%B6%E6%A8%A1%E5%9D%97"><span class="toc-text">计时模块</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#timing_counter-%E6%A8%A1%E5%9D%97"><span class="toc-text">timing_counter 模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#bin2bcd-%E6%A8%A1%E5%9D%97"><span class="toc-text">bin2bcd 模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#timing-%E6%A8%A1%E5%9D%97"><span class="toc-text">timing 模块</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E6%98%BE%E7%A4%BA-display-%E6%A8%A1%E5%9D%97"><span class="toc-text">动态显示 display 模块</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="solitude st-map-line"></i><span>最近发布</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/06/09/%E5%85%89%E7%94%B5%E6%95%88%E5%BA%94%E6%89%A9%E5%B1%95%E5%AE%9E%E9%AA%8C/" title="光电效应扩展实验"><img alt="光电效应扩展实验" src="/img/default.png"></a><div class="content"><a class="title" href="/2024/06/09/%E5%85%89%E7%94%B5%E6%95%88%E5%BA%94%E6%89%A9%E5%B1%95%E5%AE%9E%E9%AA%8C/" title="光电效应扩展实验">光电效应扩展实验</a></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/06/08/%E6%95%B0%E5%AD%97%E5%BC%8F%E7%A7%92%E8%A1%A8/" title="数字式秒表"><img alt="数字式秒表" src="/img/default.png"></a><div class="content"><a class="title" href="/2024/06/08/%E6%95%B0%E5%AD%97%E5%BC%8F%E7%A7%92%E8%A1%A8/" title="数字式秒表">数字式秒表</a></div></div></div></div></div></div></main><footer id="footer"><div id="st-footer-bar"><div class="footer-logo"><span>Solitude</span></div><div class="footer-bar-description">来自 Efu 的文章</div><a class="footer-bar-link" href="/about/">了解更多</a></div><div id="footer_deal"></div><div id="st-footer"></div><div id="footer-bar"><div class="footer-bar-links"><div class="footer-bar-left"><div class="copyright">© 2023 - 2024 By&nbsp;<a class="footer-bar-link" href="/">Jiao-77</a></div></div><div class="footer-bar-right"><a class="footer-bar-link" target="_blank" rel="noopener" href="https://github.com/valor-x/hexo-theme-solitude" alt="主题">主题</a><a class="footer-bar-link cc" href="/null" aria-label="copyright"><i class="solitude st-copyright-line"></i><i class="solitude st-creative-commons-by-line"></i><i class="solitude st-creative-commons-nc-line"></i><i class="solitude st-creative-commons-nd-line"></i></a></div></div></div></footer></div><!-- right_menu--><!-- inject body--><div><script src="/js/utils.js?v=1.11.3"></script><script src="/js/main.js?v=1.11.3"></script><script src="/js/third_party/waterfall.min.js?v=1.11.3"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script src="/js/third_party/universe.min.js?v=1.11.3"></script><script>dark()
+</script><script src="https://cdnjs.cloudflare.com/ajax/libs/node-snackbar/0.1.16/snackbar.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js"></script><div class="js-pjax"></div></div><!-- newest comment--><!-- pjax--><script>const pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: ['title','#body-wrap','#site-config','meta[name="description"]','.js-pjax','meta[property^="og:"]','#config-diff'],
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+})
 
-    </div>
-     
-    <div class="post-footer__meta"><p>更新于 2024-06-08</p></div> 
-    <div class="post-entry__tags"><a href="/tags/%E6%95%B0%E5%AD%97%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E5%AE%9E%E9%AA%8C/" class="post-tags__link button"># 数字系统设计实验</a></div> 
-</article>
+document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+})
 
+document.addEventListener('pjax:complete', () => {
+    window.refreshFn()
 
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+        const newScript = document.createElement('script')
+        const content = item.text || item.textContent || item.innerHTML || ""
+        Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+        newScript.appendChild(document.createTextNode(content))
+        item.parentNode.replaceChild(newScript, item)
+    })
 
+    GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
 
+})
 
-
-</main>
-
-            <footer class="footer">
-    
-    
-
-
-    
-     
- 
-
- 
-    
-        
-        <p class="footer-copyright">
-            Copyright © 2024 <a href="/">Jiao-77的博客</a>
-        </p>
-    
-    
-    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
-</footer>
-
-        </div>
-         
-
- 
-
- 
-
- 
-
- 
-
-
-
- 
-
-
-
- 
-
-
-    
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
-
-
-
-    </body>
-</html>
+document.addEventListener('pjax:error', (e) => {
+    if (e.request.status === 404) {
+        pjax.loadUrl('/404.html')
+    }
+})</script><!-- theme--><script>initTheme = () => {
+    let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const cachedMode = utils.saveToLocal.get('theme');
+    if (cachedMode === undefined) {
+        const nowMode =
+            isDarkMode ? 'dark' : 'light'
+        document.documentElement.setAttribute('data-theme', nowMode);
+    } else {
+        document.documentElement.setAttribute('data-theme', cachedMode);
+    }
+    is_rm && rm.mode(cachedMode === 'dark' && isDarkMode)
+}
+initTheme()</script><!-- google adsense--><!-- search--><!-- Tianli-Talk--><!-- music--></body></html><script>const posts=["2024/06/09/光电效应扩展实验/","2024/06/08/数字式秒表/"];function toRandomPost(){ pjax.loadUrl('/'+posts[Math.floor(Math.random()*posts.length)]); }</script>
