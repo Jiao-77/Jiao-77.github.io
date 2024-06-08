@@ -42,13 +42,13 @@
 <meta property="og:site_name" content="Jiao-77的博客">
 <meta property="og:description" content="实验目的： 掌握计数器的功能与应用. 理解开关防颤动的必要性. 掌握简单控制器的设计方法.  实验任务：基本要求： 计时范围0’0.0’’ ~ 9’59.9’’，分辨率为$0.1s$用数码管显示计数值。 秒表设有一个功能按键开关 ButtonIn。当电路处于“初始”状态时，第一次按键，开始自动计时；再次按键，停止计时；第三次按键，计数器自动复位$0’0.0’’$，即电路恢复初始状态。  个性化要求">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/.com//6.jpg">
+<meta property="og:image" content="http://example.com/2024/06/08/%E6%95%B0%E5%AD%97%E5%BC%8F%E7%A7%92%E8%A1%A8/6.jpg">
 <meta property="article:published_time" content="2024-06-08T12:20:18.000Z">
-<meta property="article:modified_time" content="2024-06-08T15:18:42.212Z">
+<meta property="article:modified_time" content="2024-06-08T15:39:38.279Z">
 <meta property="article:author" content="Jiao-77">
 <meta property="article:tag" content="数字系统设计实验">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/.com//6.jpg">
+<meta name="twitter:image" content="http://example.com/2024/06/08/%E6%95%B0%E5%AD%97%E5%BC%8F%E7%A7%92%E8%A1%A8/6.jpg">
 
 
     
@@ -156,7 +156,7 @@
 <h2 id="个性化要求"><a href="#个性化要求" class="headerlink" title="个性化要求"></a>个性化要求</h2><p>设计的秒表具有“双计时”功能，纪要记录甲、乙两物体同时出发，但不同时到达终点的时间，并假设甲先到达终点，功能要求如下：</p>
 <p>当电路处于“初始”状态时，第一次按键，开始自动计时；待甲到达终点时再按一下，此时是甲物体的计时值保存下来，但计时并未停止，内部电路仍在继续为乙物体积累及时；当乙物体到达终点时，第三次按键，停止计时，此时可记录并显示乙物体的计数值；第四次按键将保存下来的甲物体计数值显示出来；第五次按键，计数器自动复位为$0’0.0’’$，即秒表回到“初始”状态。</p>
 <h1 id="实验原理："><a href="#实验原理：" class="headerlink" title="实验原理："></a>实验原理：</h1><p>根据设计的基本要求，可画出秒表电路的原理框图。如所示，秒表电路由分频电路、按键处理模块、控制器、计时模块、动态显示模块组成。</p>
-<p><img src="/.com//6.jpg" alt="原理框图"><br>分频器模块产生其他模块需要的脉冲信号，其中输出的<code>pulse400Hz</code>信号是频率为$400H z$，宽度为一个<code>clk</code>周期的脉冲信号，该信号用于动态显示扫描模块。而<code>pulse10Hz</code>信号是频率为$10H z$，宽度为一个<code>clk</code>周期的脉冲信号，该信号为秒表的计时基准信号。</p>
+<p><img src="6.jpg" alt="原理框图"><br>分频器模块产生其他模块需要的脉冲信号，其中输出的<code>pulse400Hz</code>信号是频率为$400H z$，宽度为一个<code>clk</code>周期的脉冲信号，该信号用于动态显示扫描模块。而<code>pulse10Hz</code>信号是频率为$10H z$，宽度为一个<code>clk</code>周期的脉冲信号，该信号为秒表的计时基准信号。</p>
 <p>按键处理模块完成按键输入的同步器、开关防颤动和脉冲宽度变换等功能，即当按键一次，输出一个宽度为<code>clk</code>周期的脉冲信号<code>ButtonOut</code>。</p>
 <p>计时模块可由一个十进制计数器（十分之一秒计时）、一个六十进制BCD码秒计数器和一个十进制分计数器级联构成。</p>
 <p>控制器是电路的核心，在按键控制下输出信号，具体实现在下文阐述。<br>显示采用数码管动态显示技术，由于仅在第二位显示小数点，本实验中采用<code>dp=pos[1]</code>进行小数点显示的赋值。</p>
