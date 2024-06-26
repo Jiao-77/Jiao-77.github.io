@@ -1,6 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Arduino智能小车实验报告</title>
+    <url>/2024/06/26/Arduino%E6%99%BA%E8%83%BD%E5%B0%8F%E8%BD%A6%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A/</url>
+    <content><![CDATA[<h1 id="arduino智能小车实验报告">Arduino智能小车实验报告：</h1>
+<h2 id="实验目的">实验目的：</h2>
+<ol type="1">
+<li><p><strong>掌握基本的智能小车运动控制：</strong>通过编写和调试控制电机正转、反转、刹车等代码，学习并掌握智能小车前进、后退、左转、右转等基本运动控制方法。</p></li>
+<li><p><strong>理解并应用H桥电路原理：</strong>通过实践了解H桥电路在控制电机中的作用，并运用三极管或MOS管实现电机的正反转和刹车控制。</p></li>
+<li><p><strong>熟悉红外循迹和避障模块的使用：</strong>掌握红外循迹模块和红外、超声波避障模块的调试方法，并结合电机控制实现智能小车的循迹、避障功能。</p></li>
+<li><p><strong>实现智能小车的WiFi控制：</strong>过WiFi模块，实现远程控制智能小车的基本运动及其他功能（如点灯、灭火、唱歌等），并了解WiFi通信的基本原理和使用方法。</p></li>
+</ol>
+<h2 id="实验内容与要求">实验内容与要求：</h2>
+<ol type="1">
+<li><p><strong>智能小车基本运动控制：</strong></p>
+<ul>
+<li><p>任务：编写并调试智能小车的前进、后退、左转、右转和刹车功能代码。</p></li>
+<li><p>要求：智能小车应能准确执行上述基本运动，运动平稳，反应灵敏。</p></li>
+</ul></li>
+<li><p><strong>红外循迹模块调试：</strong></p>
+<ul>
+<li><p>任务：调试红外循迹模块，通过调整电位器，使小车能够顺利沿着黑线行驶。</p></li>
+<li><p>要求：小车在黑线轨道上运动平稳，不偏离轨道，能够顺利通过直线和转弯。</p></li>
+</ul></li>
+<li><p><strong>红外避障模块调试：</strong></p>
+<ul>
+<li><p>任务：安装并调试红外和超声波避障模块，使小车能够检测并避开障碍物。</p></li>
+<li><p>要求：小车在遇到前方或侧面障碍物时能够及时避让，避障动作准确，反应迅速。</p></li>
+</ul></li>
+<li><p><strong>WiFi控制：</strong></p>
+<ul>
+<li><p>任务：通过WiFi模块实现远程控制智能小车的前进、后退、左转、右转和刹车功能。</p></li>
+<li><p>要求：小车能够通过WiFi模块远程控制，并能够实现基本运动功能。</p></li>
+</ul></li>
+<li><p><strong>语音控制：</strong></p>
+<ul>
+<li><p>任务：通过语音模块实现智能小车的语音控制功能。</p></li>
+<li><p>要求：小车能够通过语音控制，实现基本运动功能。</p></li>
+</ul></li>
+</ol>
+<h2 id="实验设备">实验设备</h2>
+<ol type="1">
+<li>1 x Arduino Uno</li>
+<li>1 x 红外循迹模块</li>
+<li>1 x 红外避障模块</li>
+<li>1 x 超声波避障模块</li>
+<li>1 x WiFi控制模块</li>
+<li>1 x 语音控制模块</li>
+<li>4 x 电机</li>
+<li>2 x 舵机</li>
+<li>1 x Arduino扩展板</li>
+</ol>
+<h2 id="实验步骤">实验步骤</h2>
+<h3 id="步骤1智能小车前进后退左转右转和刹车功能代码编写"><strong>步骤1：智能小车前进、后退、左转、右转和刹车功能代码编写</strong></h3>
+<ol type="1">
+<li><p>前进/后退与使能接口定义：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> Left_motor_back=<span class="number">14</span>;     <span class="comment">//左电机后退(IN1)</span></span><br><span class="line"><span class="type">int</span> Left_motor_go=<span class="number">15</span>;     <span class="comment">//左电机前进(IN2)</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> Right_motor_go=<span class="number">17</span>;    <span class="comment">// 右电机前进(IN3)</span></span><br><span class="line"><span class="type">int</span> Right_motor_back=<span class="number">16</span>;    <span class="comment">// 右电机后退(IN4)</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> EnableA = <span class="number">3</span>;</span><br><span class="line"><span class="type">int</span> EnableB = <span class="number">5</span>;</span><br></pre></td></tr></table></figure></div></li>
+<li><p>前进函数：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">run</span><span class="params">(<span class="type">int</span> time)</span></span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="built_in">digitalWrite</span>(Right_motor_go,HIGH);  <span class="comment">// 右电机前进</span></span><br><span class="line">  <span class="built_in">digitalWrite</span>(Right_motor_back,LOW);     </span><br><span class="line">  <span class="built_in">analogWrite</span>(EnableB,<span class="number">160</span>);<span class="comment">//PWM比例0~255调速，左右轮差异略增减</span></span><br><span class="line">  <span class="built_in">analogWrite</span>(Right_motor_back,<span class="number">0</span>);</span><br><span class="line">  <span class="built_in">digitalWrite</span>(Left_motor_go,HIGH);  <span class="comment">// 左电机前进</span></span><br><span class="line">  <span class="built_in">digitalWrite</span>(Left_motor_back,LOW);</span><br><span class="line">  <span class="built_in">analogWrite</span>(EnableA,<span class="number">160</span>);<span class="comment">//PWM比例0~255调速，左右轮差异略增减</span></span><br><span class="line">  <span class="built_in">analogWrite</span>(Left_motor_back,<span class="number">0</span>);</span><br><span class="line">  <span class="built_in">delay</span>(time * <span class="number">100</span>);   <span class="comment">//执行时间，可以调整  </span></span><br><span class="line">}</span><br></pre></td></tr></table></figure></div></li>
+<li><p>后退函数：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">back</span><span class="params">(<span class="type">int</span> time)</span></span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="built_in">digitalWrite</span>(Right_motor_go,LOW);  <span class="comment">//右轮后退</span></span><br><span class="line">  <span class="built_in">digitalWrite</span>(Right_motor_back,HIGH);</span><br><span class="line">  <span class="built_in">analogWrite</span>(EnableB,<span class="number">0</span>);</span><br><span class="line">  <span class="built_in">analogWrite</span>(Right_motor_back,<span class="number">160</span>);<span class="comment">//PWM比例0~255调速</span></span><br><span class="line">  <span class="built_in">digitalWrite</span>(Left_motor_go,LOW);  <span class="comment">//左轮后退</span></span><br><span class="line">  <span class="built_in">digitalWrite</span>(Left_motor_back,HIGH);</span><br><span class="line">  <span class="built_in">analogWrite</span>(EnableA,<span class="number">0</span>);</span><br><span class="line">  <span class="built_in">analogWrite</span>(Left_motor_back,<span class="number">160</span>);<span class="comment">//PWM比例0~255调速</span></span><br><span class="line">  <span class="built_in">delay</span>(time * <span class="number">100</span>);     <span class="comment">//执行时间，可以调整  </span></span><br><span class="line">}</span><br></pre></td></tr></table></figure></div></li>
+<li><p>左转函数：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">left</span><span class="params">(<span class="type">int</span> time)</span></span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="built_in">digitalWrite</span>(Right_motor_go,HIGH);	<span class="comment">// 右电机前进</span></span><br><span class="line">  <span class="built_in">digitalWrite</span>(Right_motor_back,LOW);</span><br><span class="line">  <span class="built_in">analogWrite</span>(EnableB,<span class="number">160</span>); </span><br><span class="line">  <span class="built_in">analogWrite</span>(Right_motor_back,<span class="number">0</span>);<span class="comment">//PWM比例0~255调速</span></span><br><span class="line">  <span class="built_in">digitalWrite</span>(Left_motor_go,LOW);   <span class="comment">//左轮后退</span></span><br><span class="line">  <span class="built_in">digitalWrite</span>(Left_motor_back,LOW);</span><br><span class="line">  <span class="built_in">analogWrite</span>(EnableA,<span class="number">0</span>); </span><br><span class="line">  <span class="built_in">analogWrite</span>(Left_motor_back,<span class="number">0</span>);<span class="comment">//PWM比例0~255调速</span></span><br><span class="line">  <span class="built_in">delay</span>(time * <span class="number">100</span>);	<span class="comment">//执行时间，可以调整  </span></span><br><span class="line">}</span><br></pre></td></tr></table></figure></div></li>
+<li><p>右转函数：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">right</span><span class="params">(<span class="type">int</span> time)</span></span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="built_in">digitalWrite</span>(Right_motor_go,LOW);   <span class="comment">//右电机后退</span></span><br><span class="line">  <span class="built_in">digitalWrite</span>(Right_motor_back,LOW);</span><br><span class="line">  <span class="built_in">analogWrite</span>(EnableB,<span class="number">0</span>); </span><br><span class="line">  <span class="built_in">analogWrite</span>(Right_motor_back,<span class="number">0</span>);<span class="comment">//PWM比例0~255调速</span></span><br><span class="line">  <span class="built_in">digitalWrite</span>(Left_motor_go,HIGH);<span class="comment">//左电机前进</span></span><br><span class="line">  <span class="built_in">digitalWrite</span>(Left_motor_back,LOW);</span><br><span class="line">  <span class="built_in">analogWrite</span>(EnableA,<span class="number">160</span>); </span><br><span class="line">  <span class="built_in">analogWrite</span>(Left_motor_back,<span class="number">0</span>);<span class="comment">//PWM比例0~255调速</span></span><br><span class="line">  <span class="built_in">delay</span>(time * <span class="number">100</span>);	<span class="comment">//执行时间，可以调整  </span></span><br><span class="line">}</span><br></pre></td></tr></table></figure></div></li>
+<li><p>刹车函数：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">brake</span><span class="params">(<span class="type">int</span> time)</span></span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="built_in">digitalWrite</span>(Right_motor_go,LOW);</span><br><span class="line">  <span class="built_in">digitalWrite</span>(Right_motor_back,LOW);</span><br><span class="line">  <span class="built_in">digitalWrite</span>(Left_motor_go,LOW);</span><br><span class="line">  <span class="built_in">digitalWrite</span>(Left_motor_back,LOW);</span><br><span class="line">  <span class="built_in">delay</span>(time * <span class="number">100</span>);<span class="comment">//执行时间，可以调整  </span></span><br><span class="line">}</span><br></pre></td></tr></table></figure></div></li>
+<li><p>原地左转函数：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">spin_left</span><span class="params">(<span class="type">int</span> time)</span>         <span class="comment">//左转(左轮后退，右轮前进)</span></span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="built_in">digitalWrite</span>(Right_motor_go,HIGH);	<span class="comment">// 右电机前进</span></span><br><span class="line">  <span class="built_in">digitalWrite</span>(Right_motor_back,LOW);</span><br><span class="line">  <span class="built_in">analogWrite</span>(EnableB,<span class="number">130</span>); </span><br><span class="line">  <span class="built_in">analogWrite</span>(Right_motor_back,<span class="number">0</span>);<span class="comment">//PWM比例0~255调速</span></span><br><span class="line">  <span class="built_in">digitalWrite</span>(Left_motor_go,LOW);   <span class="comment">//左轮后退</span></span><br><span class="line">  <span class="built_in">digitalWrite</span>(Left_motor_back,HIGH);</span><br><span class="line">  <span class="built_in">analogWrite</span>(EnableA,<span class="number">0</span>); </span><br><span class="line">  <span class="built_in">analogWrite</span>(Left_motor_back,<span class="number">130</span>);<span class="comment">//PWM比例0~255调速</span></span><br><span class="line">  <span class="built_in">delay</span>(time * <span class="number">100</span>);	<span class="comment">//执行时间，可以调整  </span></span><br><span class="line">}</span><br></pre></td></tr></table></figure></div></li>
+<li><p>原地右转函数：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">spin_right</span><span class="params">(<span class="type">int</span> time)</span>        <span class="comment">//右转(右轮后退，左轮前进)</span></span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="built_in">digitalWrite</span>(Right_motor_go,LOW);   <span class="comment">//右电机后退</span></span><br><span class="line">  <span class="built_in">digitalWrite</span>(Right_motor_back,HIGH);</span><br><span class="line">  <span class="built_in">analogWrite</span>(EnableB,<span class="number">0</span>); </span><br><span class="line">  <span class="built_in">analogWrite</span>(Right_motor_back,<span class="number">130</span>);<span class="comment">//PWM比例0~255调速</span></span><br><span class="line">  <span class="built_in">digitalWrite</span>(Left_motor_go,HIGH);<span class="comment">//左电机前进</span></span><br><span class="line">  <span class="built_in">digitalWrite</span>(Left_motor_back,LOW);</span><br><span class="line">  <span class="built_in">analogWrite</span>(EnableA,<span class="number">130</span>); </span><br><span class="line">  <span class="built_in">analogWrite</span>(Left_motor_back,<span class="number">0</span>);<span class="comment">//PWM比例0~255调速</span></span><br><span class="line">  <span class="built_in">delay</span>(time * <span class="number">100</span>);	<span class="comment">//执行时间，可以调整    </span></span><br><span class="line">}</span><br></pre></td></tr></table></figure></div></li>
+<li><p>Setup函数：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">setup</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  Serial.<span class="built_in">begin</span>(<span class="number">9600</span>);</span><br><span class="line">  <span class="comment">//初始化电机驱动IO为输出方式</span></span><br><span class="line">  <span class="built_in">pinMode</span>(Left_motor_go,OUTPUT); <span class="comment">// PIN 8 (PWM)</span></span><br><span class="line">  <span class="built_in">pinMode</span>(Left_motor_back,OUTPUT); <span class="comment">// PIN 9 (PWM)</span></span><br><span class="line">  <span class="built_in">pinMode</span>(Right_motor_go,OUTPUT);<span class="comment">// PIN 10 (PWM) </span></span><br><span class="line">  <span class="built_in">pinMode</span>(Right_motor_back,OUTPUT);<span class="comment">// PIN 11 (PWM)</span></span><br><span class="line">  <span class="built_in">pinMode</span>(EnableA, OUTPUT);</span><br><span class="line">  <span class="built_in">pinMode</span>(EnableB, OUTPUT);</span><br><span class="line">}</span><br></pre></td></tr></table></figure></div></li>
+<li><p>花式动作<code>loop</code>函数：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">loop</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="type">int</span> i;</span><br><span class="line">  <span class="built_in">delay</span>(<span class="number">1400</span>); <span class="comment">//延时2s后启动</span></span><br><span class="line">  <span class="built_in">run</span>(<span class="number">10</span>);</span><br><span class="line">  <span class="built_in">back</span>(<span class="number">10</span>);<span class="comment">//全速前进急停后退</span></span><br><span class="line">  <span class="built_in">brake</span>(<span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;<span class="number">5</span>;i++)</span><br><span class="line">  {</span><br><span class="line">    <span class="built_in">run</span>(<span class="number">1</span>);<span class="comment">//小车间断性前进5步</span></span><br><span class="line">    <span class="built_in">brake</span>(<span class="number">1</span>);</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;<span class="number">5</span>;i++)</span><br><span class="line">  {</span><br><span class="line">    <span class="built_in">back</span>(<span class="number">1</span>);<span class="comment">//小车间断性后腿5步</span></span><br><span class="line">    <span class="built_in">brake</span>(<span class="number">1</span>);</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;<span class="number">5</span>;i++)</span><br><span class="line">  {</span><br><span class="line">    <span class="built_in">left</span>(<span class="number">20</span>);<span class="comment">//大弯套小弯连续左旋转</span></span><br><span class="line">    <span class="built_in">spin_left</span>(<span class="number">10</span>);</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;<span class="number">5</span>;i++)</span><br><span class="line">  {</span><br><span class="line">    <span class="built_in">right</span>(<span class="number">20</span>);<span class="comment">//大弯套小弯连续右旋转</span></span><br><span class="line">    <span class="built_in">spin_right</span>(<span class="number">10</span>);</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;<span class="number">10</span>;i++)</span><br><span class="line">  {</span><br><span class="line">    <span class="built_in">right</span>(<span class="number">1</span>);<span class="comment">//间断性原地右转弯</span></span><br><span class="line">    <span class="built_in">brake</span>(<span class="number">1</span>);</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;<span class="number">10</span>;i++)</span><br><span class="line">  {</span><br><span class="line">    <span class="built_in">left</span>(<span class="number">1</span>);<span class="comment">//间断性原地左转弯</span></span><br><span class="line">    <span class="built_in">brake</span>(<span class="number">1</span>);</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;<span class="number">10</span>;i++)</span><br><span class="line">  {</span><br><span class="line">    <span class="built_in">left</span>(<span class="number">2</span>);<span class="comment">//走S形前进</span></span><br><span class="line">    <span class="built_in">right</span>(<span class="number">2</span>);</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;<span class="number">10</span>;i++)</span><br><span class="line">  {</span><br><span class="line">    <span class="built_in">spin_left</span>(<span class="number">3</span>);<span class="comment">//间断性原地左打转</span></span><br><span class="line">    <span class="built_in">brake</span>(<span class="number">3</span>);</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span>(i=<span class="number">0</span>;i&lt;<span class="number">10</span>;i++)</span><br><span class="line">  {</span><br><span class="line">    <span class="built_in">spin_right</span>(<span class="number">3</span>);<span class="comment">//间断性原地右打转</span></span><br><span class="line">    <span class="built_in">brake</span>(<span class="number">3</span>);</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">}</span><br></pre></td></tr></table></figure></div></li>
+</ol>
+<h3 id="步骤2红外循迹模块调试"><strong>步骤2：红外循迹模块调试</strong></h3>
+<ol type="1">
+<li><p>增加红外循迹模块及接口：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">const</span> <span class="type">int</span> SensorRight = <span class="number">2</span>;   	<span class="comment">//右循迹红外传感器(P3.2 OUT1)</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> SensorLeft = <span class="number">6</span>;     	<span class="comment">//左循迹红外传感器(P3.3 OUT2)</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> SL;    <span class="comment">//左循迹红外传感器状态</span></span><br><span class="line"><span class="type">int</span> SR;    <span class="comment">//右循迹红外传感器状态</span></span><br></pre></td></tr></table></figure></div></li>
+<li><p>红外循迹运动函数：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">loop</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>{ </span><br><span class="line">  <span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">  {</span><br><span class="line">  <span class="comment">//有信号为LOW  没有信号为HIGH</span></span><br><span class="line">  SR = <span class="built_in">digitalRead</span>(SensorRight);<span class="comment">//有信号表明在白色区域，车子底板上L3亮；没信号表明压在黑线上，车子底板上L3灭</span></span><br><span class="line">  SL = <span class="built_in">digitalRead</span>(SensorLeft);<span class="comment">//有信号表明在白色区域，车子底板上L2亮；没信号表明压在黑线上，车子底板上L2灭</span></span><br><span class="line">  <span class="keyword">if</span> (SL == LOW &amp;&amp;SR== LOW)</span><br><span class="line">    <span class="built_in">run</span>();   <span class="comment">//调用前进函数</span></span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span> (SL == HIGH &amp; SR == LOW)<span class="comment">// 左循迹红外传感器,检测到信号，车子向右偏离轨道，向左转 </span></span><br><span class="line">    <span class="built_in">left</span>();</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span> (SR == HIGH &amp; SL == LOW) <span class="comment">// 右循迹红外传感器,检测到信号，车子向左偏离轨道，向右转  </span></span><br><span class="line">    <span class="built_in">right</span>();</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">  <span class="comment">// 都是白色, 停止</span></span><br><span class="line">  <span class="built_in">brake</span>();</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></table></figure></div></li>
+</ol>
+<p>
+</p><h3 id="步骤3红外避障模块调试"><strong>步骤3：红外避障模块调试</strong></h3>
+<ol type="1">
+<li><p>增加红外避障模块及接口：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">const</span> <span class="type">int</span> SensorRight = <span class="number">12</span>;   	<span class="comment">//右避障红外传感器(P3.2 OUT1)</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> SensorLeft = <span class="number">13</span>;     	<span class="comment">//左避障红外传感器(P3.3 OUT2)</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> SL;    <span class="comment">//左避障红外传感器状态</span></span><br><span class="line"><span class="type">int</span> SR;    <span class="comment">//右避障红外传感器状态</span></span><br></pre></td></tr></table></figure></div></li>
+</ol>
+<p>​ 将更新后的接口上传到Arduino
+Uno上，可以看到小车开始执行避障动作。</p>
+<h3 id="步骤4超声波避障模块调试"><strong>步骤4：超声波避障模块调试</strong></h3>
+<ol type="1">
+<li><p>增加超声波避障模块及接口：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> Echo = <span class="number">9</span>;  <span class="comment">// Echo回声脚(P2.0)</span></span><br><span class="line"><span class="type">int</span> Trig =<span class="number">8</span>;  <span class="comment">//  Trig 触发脚(P2.1)</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> servopin=<span class="number">11</span>;<span class="comment">//设置舵机驱动脚到数字口2</span></span><br><span class="line"><span class="type">int</span> myangle;<span class="comment">//定义角度变量</span></span><br><span class="line"><span class="type">int</span> pulsewidth;<span class="comment">//定义脉宽变量</span></span><br><span class="line"><span class="type">int</span> val;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> Front_Distance = <span class="number">0</span>;</span><br><span class="line"><span class="type">int</span> Left_Distance = <span class="number">0</span>;</span><br><span class="line"><span class="type">int</span> Right_Distance = <span class="number">0</span>;</span><br></pre></td></tr></table></figure></div></li>
+<li><p>更新<code>Setup</code>函数的接口定义：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">pinMode</span>(Echo, INPUT);    <span class="comment">// 定义超声波输入脚</span></span><br><span class="line"><span class="built_in">pinMode</span>(Trig, OUTPUT);   <span class="comment">// 定义超声波输出脚</span></span><br><span class="line"><span class="built_in">pinMode</span>(servopin,OUTPUT);<span class="comment">//设定舵机接口为输出接口</span></span><br></pre></td></tr></table></figure></div></li>
+<li><p>超声波测距函数：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">float</span> <span class="title">Distance_test</span><span class="params">()</span>   <span class="comment">// 量出前方距离 </span></span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="built_in">digitalWrite</span>(Trig, LOW);   <span class="comment">// 给触发脚低电平2μs</span></span><br><span class="line">  <span class="built_in">delayMicroseconds</span>(<span class="number">2</span>);</span><br><span class="line">  <span class="built_in">digitalWrite</span>(Trig, HIGH);  <span class="comment">// 给触发脚高电平10μs，这里至少是10μs</span></span><br><span class="line">  <span class="built_in">delayMicroseconds</span>(<span class="number">10</span>);</span><br><span class="line">  <span class="built_in">digitalWrite</span>(Trig, LOW);    <span class="comment">// 持续给触发脚低电</span></span><br><span class="line">  <span class="type">float</span> Fdistance = <span class="built_in">pulseIn</span>(Echo, HIGH);  <span class="comment">// 读取高电平时间(单位：微秒)</span></span><br><span class="line">  Fdistance= Fdistance/<span class="number">58</span>;       <span class="comment">//为什么除以58等于厘米，  Y米=（X秒*344）/2</span></span><br><span class="line">  <span class="comment">// X秒=（ 2*Y米）/344 ==》X秒=0.0058*Y米 ==》厘米=微秒/58</span></span><br><span class="line">  <span class="comment">//Serial.print("Distance:");      //输出距离（单位：厘米）</span></span><br><span class="line">  <span class="comment">//Serial.println(Fdistance);         //显示距离</span></span><br><span class="line">  <span class="comment">//Distance = Fdistance;</span></span><br><span class="line">  <span class="keyword">return</span> Fdistance;</span><br><span class="line">}  </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">servopulse</span><span class="params">(<span class="type">int</span> servopin,<span class="type">int</span> myangle)</span><span class="comment">/*定义一个脉冲函数，用来模拟方式产生PWM值*/</span></span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  pulsewidth=(myangle*<span class="number">11</span>)+<span class="number">500</span>;<span class="comment">//将角度转化为500-2480 的脉宽值</span></span><br><span class="line">  <span class="built_in">digitalWrite</span>(servopin,HIGH);<span class="comment">//将舵机接口电平置高</span></span><br><span class="line">  <span class="built_in">delayMicroseconds</span>(pulsewidth);<span class="comment">//延时脉宽值的微秒数</span></span><br><span class="line">  <span class="built_in">digitalWrite</span>(servopin,LOW);<span class="comment">//将舵机接口电平置低</span></span><br><span class="line">  <span class="built_in">delay</span>(<span class="number">20</span>-pulsewidth/<span class="number">1000</span>);<span class="comment">//延时周期内剩余时间</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">left_detection</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;=<span class="number">15</span>;i++) <span class="comment">//产生PWM个数，等效延时以保证能转到响应角度</span></span><br><span class="line">  {</span><br><span class="line">    <span class="built_in">servopulse</span>(servopin,<span class="number">160</span>);<span class="comment">//模拟产生PWM</span></span><br><span class="line">  }</span><br><span class="line">  Left_Distance = <span class="built_in">Distance_test</span>();</span><br><span class="line">  <span class="comment">//Serial.print("Left_Distance:");      //输出距离（单位：厘米）</span></span><br><span class="line">  <span class="comment">//Serial.println(Left_Distance);         //显示距离</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">right_detection</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;=<span class="number">15</span>;i++) <span class="comment">//产生PWM个数，等效延时以保证能转到响应角度</span></span><br><span class="line">  {</span><br><span class="line">    <span class="built_in">servopulse</span>(servopin,<span class="number">55</span>);<span class="comment">//模拟产生PWM</span></span><br><span class="line">  }</span><br><span class="line">  Right_Distance = <span class="built_in">Distance_test</span>();</span><br><span class="line">  <span class="comment">//Serial.print("Right_Distance:");      //输出距离（单位：厘米）</span></span><br><span class="line">  <span class="comment">//Serial.println(Right_Distance);         //显示距离</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">front_detection</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="comment">//此处循环次数减少，为了增加小车遇到障碍物的反应速度</span></span><br><span class="line">  <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>;i&lt;=<span class="number">5</span>;i++) <span class="comment">//产生PWM个数，等效延时以保证能转到响应角度</span></span><br><span class="line">  {</span><br><span class="line">    <span class="built_in">servopulse</span>(servopin,<span class="number">90</span>);<span class="comment">//模拟产生PWM</span></span><br><span class="line">  }</span><br><span class="line">  Front_Distance = <span class="built_in">Distance_test</span>();</span><br><span class="line">  <span class="comment">//Serial.print("Front_Distance:");      //输出距离（单位：厘米）</span></span><br><span class="line"> <span class="comment">// Serial.println(Front_Distance);         //显示距离</span></span><br><span class="line"> <span class="comment">//Distance_display(Front_Distance);</span></span><br><span class="line">}</span><br></pre></td></tr></table></figure></div></li>
+<li><p>超声波避障函数：</p>
+<div class="highlight-container" data-rel="Cpp"><figure class="iseeu highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">loop</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>{ </span><br><span class="line">  <span class="keyword">while</span>(<span class="number">1</span>){</span><br><span class="line">    <span class="built_in">front_detection</span>();</span><br><span class="line">    <span class="keyword">if</span>(Front_Distance &lt; <span class="number">42</span>){</span><br><span class="line">      <span class="built_in">back</span>(<span class="number">2</span>);</span><br><span class="line">      <span class="built_in">brake1</span>(<span class="number">200</span>);</span><br><span class="line">      <span class="built_in">left_detection</span>();</span><br><span class="line">      <span class="built_in">right_detection</span>();</span><br><span class="line">      <span class="built_in">brake1</span>(<span class="number">200</span>);</span><br><span class="line">      <span class="keyword">if</span>((Left_Distance &lt; <span class="number">35</span>) &amp;&amp; (Right_Distance &lt; <span class="number">35</span>)) <span class="built_in">spin_left</span>(<span class="number">70</span>);</span><br><span class="line">      <span class="keyword">else</span> <span class="keyword">if</span> (Left_Distance &gt; Right_Distance){</span><br><span class="line">        <span class="built_in">left</span>(<span class="number">300</span>);</span><br><span class="line">        <span class="built_in">brake1</span>(<span class="number">100</span>);</span><br><span class="line">      }<span class="keyword">else</span> {</span><br><span class="line">        <span class="built_in">right</span>(<span class="number">300</span>);</span><br><span class="line">        <span class="built_in">brake1</span>(<span class="number">100</span>);</span><br><span class="line">      }</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">else</span> {</span><br><span class="line">      <span class="comment">//有信号为LOW  没有信号为HIGH</span></span><br><span class="line">      SR = <span class="built_in">digitalRead</span>(SensorRight);<span class="comment">//有信号表明在白色区域，车子底板上L3亮；没信号表明压在黑线上，车子底板上L3灭</span></span><br><span class="line">      SL = <span class="built_in">digitalRead</span>(SensorLeft);<span class="comment">//有信号表明在白色区域，车子底板上L2亮；没信号表明压在黑线上，车子底板上L2灭</span></span><br><span class="line">      <span class="keyword">if</span> (SL == HIGH &amp;&amp;SR== HIGH)</span><br><span class="line">        <span class="built_in">run1</span>();   <span class="comment">//调用前进函数</span></span><br><span class="line">      <span class="keyword">else</span> <span class="keyword">if</span> (SL == HIGH &amp; SR == LOW)<span class="comment">// 左循迹红外传感器,检测到信号，车子向右偏离轨道，向左转 </span></span><br><span class="line">        <span class="built_in">left1</span>();</span><br><span class="line">      <span class="keyword">else</span> <span class="keyword">if</span> (SR == HIGH &amp; SL == LOW) <span class="comment">// 右循迹红外传感器,检测到信号，车子向左偏离轨道，向右转  </span></span><br><span class="line">        <span class="built_in">right1</span>();</span><br><span class="line">      <span class="keyword">else</span>{</span><br><span class="line">        <span class="built_in">spin_right1</span>();</span><br><span class="line">      }</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></table></figure></div>
+<h3 id="步骤5wifi控制">步骤5：WiFi控制：</h3>
+<ul>
+<li>按照步骤安装WiFi模块与摄像头模块。</li>
+<li>将提供的<code>wifi_robot-6shihj-up.ino</code>上传到Arduino
+Uno上。</li>
+<li>电脑安装小R科技后，链接小车的WIFI模块发出的WIFI信号</li>
+<li>有电脑上位机向小车发送控制信号，小车开始执行相应的动作。</li>
+</ul>
+<h3 id="步骤6语音控制">步骤6：语音控制：</h3>
+<ul>
+<li>首先通过天问Block语音控制软件生成语音控制模型上传到语音模块中。</li>
+<li>然后在Arduino Uno上传空白的Arduino文件，放置程序冲突。</li>
+<li>启动小车，检验是否能够正常控制。</li>
+</ul></li>
+</ol>
+<h2 id="实验调试过程">实验调试过程</h2>
+<h3 id="红外循迹模块电位器问题">红外循迹模块：电位器问题</h3>
+<pre><code>起初小车循迹模块反应迟钝，不进行正常的黑线循迹运动，于是我转动两个红外循迹模块电位器，提高了灵敏度，小车能够顺着黑线运动了。
+
+此时又出现了别的问题：在黑色直线上小车是左右晃动着前行的，也就是直行时还调用了左右转的函数，我们思考后认为电位器太灵敏了，小车红外识别了地面上残留的胶带印，而且可能左右的红外元件离得太近，从而使小车频繁地转向，“扭动”，于是我们又细调了电位器以及红外元件的角度，使得小车能在直线上循迹运动。
+
+至于在急转弯的时候转不过的问题，修改了函数中的speed，以及转弯函数中执行时间delay的参数值，问题很快得到了解决。</code></pre>
+<h3 id="红外避障以及超声波避障模块二者结合作用更大">红外避障以及超声波避障模块：二者结合作用更大</h3>
+<pre><code>红外避障主要是注意两个元件向外张开的角度，大概调至了5-10°，就能很好地工作了。
+
+超声波避障模块问题还是比较多的。首先就是舵机转动角度有限，超声波模块安装后向左转的幅度大，向右只转动一点点。经过观察，在舵机转动到大概平衡位置时（即舵机相对于这个位置在两边转过的角度相同）拆下超声波元件，安装在正面，之后它就能向左向右转动大致相同的角度了。
+
+然后就是超声波探测的角度有限，当小车运动轨迹与墙壁夹角很小时，超声波是探测不出来的，它认为前方没有障碍，于是继续直行，侧面会撞上墙壁。经过和同桌商量，我们一致认为，加入红外避障是最好的解决办法。超声波主要测前方障碍，红外主要测侧面障碍，只是要注意不要让二者同时调用运动函数导致小车转动角度太大的情况。二者结合，效果很不错。</code></pre>
+<h3 id="wifi模块">WiFi模块:</h3>
+<pre><code>WiFi模块是简单又实用的部分。只需注意开热点的同学信号用2.4GHz频段，区分两个二维码即可，速度调整的方式和上面说到的是一样的。经过测试，小车可以实现WiFi遥控的前进、后退、左转、右转等功能，并且可以在远距离条件下实现控制。</code></pre>
+<p></p>]]></content>
+      <categories>
+        <category>课程资料</category>
+      </categories>
+      <tags>
+        <tag>Arduino智能小车</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Aquila—中性原子计算机的前沿研发样例</title>
     <url>/2024/06/09/Aquila%E2%80%94%E4%B8%AD%E6%80%A7%E5%8E%9F%E5%AD%90%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%9A%84%E5%89%8D%E6%B2%BF%E7%A0%94%E5%8F%91%E6%A0%B7%E4%BE%8B/</url>
     <content><![CDATA[<h1 id="aquila中性原子计算机的前沿研发样例">Aquila—中性原子计算机的前沿研发样例</h1>
@@ -169,6 +307,139 @@ a 256-atom programmable quantum simulator[J]. Nature, 2021, 595(7866):
       </categories>
       <tags>
         <tag>中性原子量子计算机</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mermaid</title>
+    <url>/2024/06/11/Mermaid/</url>
+    <content><![CDATA[<pre class="mermaid">  graph TD;
+      A--&gt;B;
+      A--&gt;C;
+      B--&gt;D;
+      C--&gt;D;</pre>
+]]></content>
+      <categories>
+        <category>测试文档</category>
+      </categories>
+      <tags>
+        <tag>测试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>pdf测试</title>
+    <url>/2024/06/11/pdf%E6%B5%8B%E8%AF%95/</url>
+    <content><![CDATA[<h1 id="这是一篇测试文档用来测试pdf.js是否正常">这是一篇测试文档，用来测试pdf.js是否正常。</h1>
+<embed src="./report.pdf" width="100%" height="750" type="application/pdf">
+]]></content>
+      <categories>
+        <category>测试文档</category>
+      </categories>
+      <tags>
+        <tag>测试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>交叉一致性训练</title>
+    <url>/2024/06/09/%E4%BA%A4%E5%8F%89%E4%B8%80%E8%87%B4%E6%80%A7%E8%AE%AD%E7%BB%83/</url>
+    <content><![CDATA[<h1 id="交叉一致性训练cct">交叉一致性训练（CCT）</h1>
+<p>是一种半监督学习方法，特别针对图像的语义分割，基本原理是通过大量的未标记数据来提高网络模型的性能。</p>
+<h2 id="主译码器与辅助姨妈期相结合">主译码器与辅助姨妈期相结合</h2>
+<p>CCT模型中包含一个主解码器和至少一个辅助解码器。这些解码器共享相同的编码器，编码器负责从输入图像中提取特征。</p>
+<h3 id="共享编码器结构"><strong>共享编码器结构</strong>：</h3>
+<p>在CCT中，主解码器和一个或多个辅助解码器共享同一个编码器。这个编码器的作用是从输入图像中提取特征。通过共享编码器，不同的解码器能够分析相同的特征表示，并且在此基础上进行预测。</p>
+<h3 id="主解码器的作用"><strong>主解码器的作用</strong>：</h3>
+<p>主解码器是模型的核心部分，负责进行最终预测。在有监督数据集的场景中，它直接学习从编码器提取的特征到正确标签的映射。</p>
+<h3 id="辅助解码器的作用"><strong>辅助解码器的作用</strong>：</h3>
+<p>辅助解码器与主解码器并行工作，但不是直接用于最终预测。相反，它们的目的是通过不同的视角来分析编码的特征，并与主解码器的输出进行比较。在训练过程中，这些辅助解码器可能会被应用不同的扰动或是训练策略，以增强系统的鲁棒性。</p>
+<h3 id="一致性学习机制"><strong>一致性学习机制</strong>：</h3>
+<p>辅助解码器的输出被用来训练主解码器，以使其输出更加稳定。通过实施一致性损失，确保即使面对经过扰动的输入特征，主解码器的输出也能保持稳定，从而利用未标记数据来模拟监着学习情形。</p>
+<h3 id="多任务学习"><strong>多任务学习</strong>：</h3>
+<p>CCT框架还可能包括多任务学习的元素，即同时学习多个相关任务来进一步丰富特征的表示。这种方式可以使得主解码器和辅助解码器的能力相互补充，并且提升整个网络的泛化能力。</p>
+<h2 id="应用扰动">应用扰动</h2>
+<p>为了增加训练的难度并提升模型的泛化能力，对编码器的输出应用随机扰动。这些扰动可以是随机噪声、去色、旋转等。这样做的目的是让模型学会忽略不重要的变化，专注于对图像语义的理解。</p>
+<h3 id="扰动类型">扰动类型：</h3>
+<p>扰动可以是多种多样的，包括添加噪声、颜色变换（去色）、旋转、尺度变化、裁剪、模糊等。这些扰动模拟了现实世界中图像可能受到的变化和干扰。</p>
+<h3 id="扰动的目的">扰动的目的：</h3>
+<p>应用这些扰动的主要目的是为了让模型学会从多变的输入中提取核心和可靠的特征。模型不应被某些不重要的图像变化所迷惑，而应专注于图像的语义理解。</p>
+<h3 id="训练过程中的扰动">训练过程中的扰动</h3>
+<p>在CCT的训练过程中，这些扰动被随机应用于编码器提取的特征上。然后，扰动后的特征被送入主解码器和辅助解码器中生成预测结果。</p>
+<h3 id="一致性约束与扰动">一致性约束与扰动</h3>
+<p>通过对比扰动前后的预测结果，CCT使用一致性损失函数来指导模型训练。如果扰动前后的预测结果差异太大，说明模型对输入图像的小变化过于敏感，这时损失函数会惩罚模型，促使其在未来更好地抵抗此类扰动。</p>
+<h3 id="效果验证">效果验证</h3>
+<p>模型在训练过程中通常会被验证其对扰动的鲁棒性。这通常通过在验证集上应用类似但未见过的扰动来完成，来评估模型是否可以有效地处理这些新扰动。</p>
+<h2 id="一致性约束">一致性约束</h2>
+<h3 id="确保预测的稳定性">确保预测的稳定性：</h3>
+<p>一致性约束的主要目标是保持模型预测的稳定性。模型通过未变化和变化后的输入数据学习，无论输入数据如何变化，模型都应产生准确且一致的输出。</p>
+<h3 id="最小化预测差异">最小化预测差异</h3>
+<p>一致性约束通常通过一个损失函数实现，这个损失函数量化了两个解码器输出的差异。在CCT中，损失函数鼓励模型最小化因不同扰动导致输出结果差异，从而强制它们在经过扰动的数据上也能预测出相似的结果。</p>
+<h3 id="实施策略">实施策略</h3>
+<p>一致性约束可能会以多种方式实施。例如，可以是简单地比较主解码器和辅助解码器的输出，或者使用更复杂的策略如温度缩放或一定比例的混合策略等，来确保预测结果尽可能一致。</p>
+<h3 id="未标记数据的使用">未标记数据的使用</h3>
+<p>一致性约束是利用未标记数据的有效手段。通过对未标记数据的预测结果施加约束，模型可以通过大量的未标记样本学习，提高其对未知数据的泛化能力。</p>
+<h3 id="调整与优化">调整与优化</h3>
+<p>训练过程中，一致性损失权重可能会根据具体的训练动态进行调整。例如，模型在初期训练时可能对一致性约束较不敏感，但随着训练的深入，一致性损失的权重可能会增加，以促进更加精确的预测。</p>
+<h2 id="利用未标记数据">利用未标记数据</h2>
+<h3 id="数据集的结合">数据集的结合：</h3>
+<p>CCT结合了标记数据和未标记数据。标记数据用来训练模型对已知类别的正确分割，而未标记数据则用来强制模型在更广泛的数据分布上保持一致性。</p>
+<h3 id="端对端训练">端对端训练</h3>
+<p>CCT允许对包含未标记数据的整个数据集进行端到端训练，这样模型可以在学习过程中自然地从未标记数据中获益。</p>
+]]></content>
+      <categories>
+        <category>CV论文笔记</category>
+      </categories>
+      <tags>
+        <tag>半监督语义分割</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基于对抗学习的半监督语义分割</title>
+    <url>/2024/06/09/%E5%9F%BA%E4%BA%8E%E5%AF%B9%E6%8A%97%E5%AD%A6%E4%B9%A0%E7%9A%84%E5%8D%8A%E7%9B%91%E7%9D%A3%E8%AF%AD%E4%B9%89%E5%88%86%E5%89%B2/</url>
+    <content><![CDATA[<h1 id="基于对抗学习的半监督语义分割">基于对抗学习的半监督语义分割</h1>
+<h2 id="网络架构">网络架构</h2>
+<p>本文提出了一种基于对抗学习的半监督语义分割算法。该方法主要由两个子网络组成：分割网络和判别器网络。这两个网络在训练过程中进行对抗，形成一个类似于生成对抗网络（GAN）的架构。</p>
+<ol type="1">
+<li><strong>分割网络（Segmentation Network）</strong>：
+<ul>
+<li>该网络负责生成输入图像的语义标签概率图。</li>
+<li>使用多任务损失函数训练，包括交叉熵损失、对抗损失和半监督损失 。</li>
+</ul></li>
+<li><strong>判别器网络（Discriminator Network）</strong>：
+<ul>
+<li>设计为全卷积网络，以区分分割网络生成的概率图和真实标签图。</li>
+<li>在对抗训练过程中，通过与分割网络的对抗，提升分割网络的预测准确性
+。</li>
+</ul></li>
+</ol>
+<h2 id="损失函数">损失函数</h2>
+<p>总的损失函数由三个部分组成：
+𝐿seg=𝐿ce+𝜆adv𝐿adv+𝜆semi𝐿semi<em>L</em>seg=<em>L</em>ce+<em>λ</em>adv<em>L</em>adv+<em>λ</em>semi<em>L</em>semi</p>
+<ul>
+<li>𝐿ce<em>L</em>ce：交叉熵损失，用于有标签数据。</li>
+<li>𝐿adv<em>L</em>adv：对抗损失，通过判别器网络来区分生成的概率图和真实标签图。</li>
+<li>𝐿semi<em>L</em>semi：半监督损失，利用判别器网络生成的置信度图指导无标签数据的训练。</li>
+</ul>
+<h2 id="训练过程">训练过程</h2>
+<ol type="1">
+<li><strong>有标签数据的训练</strong>：
+<ul>
+<li>使用标准交叉熵损失函数进行训练。</li>
+<li>对抗损失通过训练分割网络来欺骗判别器，使其无法区分生成的概率图和真实标签图
+。</li>
+</ul></li>
+<li><strong>无标签数据的训练</strong>：
+<ul>
+<li>仅适用对抗损失，因为没有真实标签。</li>
+<li>利用训练后的判别器网络生成的置信度图，通过阈值化选取可信区域，并进行自监督训练。</li>
+<li>置信度图的高置信度区域被用作伪标签，通过掩码交叉熵损失进行训练
+。</li>
+</ul></li>
+</ol>
+]]></content>
+      <categories>
+        <category>CV论文笔记</category>
+      </categories>
+      <tags>
+        <tag>半监督语义分割</tag>
       </tags>
   </entry>
   <entry>
@@ -862,86 +1133,6 @@ Acta Optica Sinica, 2008, 28(7): 1364-1368.</p>
       </tags>
   </entry>
   <entry>
-    <title>Mermaid</title>
-    <url>/2024/06/11/Mermaid/</url>
-    <content><![CDATA[<pre class="mermaid">  graph TD;
-      A--&gt;B;
-      A--&gt;C;
-      B--&gt;D;
-      C--&gt;D;</pre>
-]]></content>
-      <categories>
-        <category>测试文档</category>
-      </categories>
-      <tags>
-        <tag>测试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>pdf测试</title>
-    <url>/2024/06/11/pdf%E6%B5%8B%E8%AF%95/</url>
-    <content><![CDATA[<h1 id="这是一篇测试文档用来测试pdf.js是否正常">这是一篇测试文档，用来测试pdf.js是否正常。</h1>
-<embed src="./report.pdf" width="100%" height="750" type="application/pdf">
-]]></content>
-      <categories>
-        <category>测试文档</category>
-      </categories>
-      <tags>
-        <tag>测试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>基于对抗学习的半监督语义分割</title>
-    <url>/2024/06/09/%E5%9F%BA%E4%BA%8E%E5%AF%B9%E6%8A%97%E5%AD%A6%E4%B9%A0%E7%9A%84%E5%8D%8A%E7%9B%91%E7%9D%A3%E8%AF%AD%E4%B9%89%E5%88%86%E5%89%B2/</url>
-    <content><![CDATA[<h1 id="基于对抗学习的半监督语义分割">基于对抗学习的半监督语义分割</h1>
-<h2 id="网络架构">网络架构</h2>
-<p>本文提出了一种基于对抗学习的半监督语义分割算法。该方法主要由两个子网络组成：分割网络和判别器网络。这两个网络在训练过程中进行对抗，形成一个类似于生成对抗网络（GAN）的架构。</p>
-<ol type="1">
-<li><strong>分割网络（Segmentation Network）</strong>：
-<ul>
-<li>该网络负责生成输入图像的语义标签概率图。</li>
-<li>使用多任务损失函数训练，包括交叉熵损失、对抗损失和半监督损失 。</li>
-</ul></li>
-<li><strong>判别器网络（Discriminator Network）</strong>：
-<ul>
-<li>设计为全卷积网络，以区分分割网络生成的概率图和真实标签图。</li>
-<li>在对抗训练过程中，通过与分割网络的对抗，提升分割网络的预测准确性
-。</li>
-</ul></li>
-</ol>
-<h2 id="损失函数">损失函数</h2>
-<p>总的损失函数由三个部分组成：
-𝐿seg=𝐿ce+𝜆adv𝐿adv+𝜆semi𝐿semi<em>L</em>seg=<em>L</em>ce+<em>λ</em>adv<em>L</em>adv+<em>λ</em>semi<em>L</em>semi</p>
-<ul>
-<li>𝐿ce<em>L</em>ce：交叉熵损失，用于有标签数据。</li>
-<li>𝐿adv<em>L</em>adv：对抗损失，通过判别器网络来区分生成的概率图和真实标签图。</li>
-<li>𝐿semi<em>L</em>semi：半监督损失，利用判别器网络生成的置信度图指导无标签数据的训练。</li>
-</ul>
-<h2 id="训练过程">训练过程</h2>
-<ol type="1">
-<li><strong>有标签数据的训练</strong>：
-<ul>
-<li>使用标准交叉熵损失函数进行训练。</li>
-<li>对抗损失通过训练分割网络来欺骗判别器，使其无法区分生成的概率图和真实标签图
-。</li>
-</ul></li>
-<li><strong>无标签数据的训练</strong>：
-<ul>
-<li>仅适用对抗损失，因为没有真实标签。</li>
-<li>利用训练后的判别器网络生成的置信度图，通过阈值化选取可信区域，并进行自监督训练。</li>
-<li>置信度图的高置信度区域被用作伪标签，通过掩码交叉熵损失进行训练
-。</li>
-</ul></li>
-</ol>
-]]></content>
-      <categories>
-        <category>CV论文笔记</category>
-      </categories>
-      <tags>
-        <tag>半监督语义分割</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>数字式秒表</title>
     <url>/2024/06/08/%E6%95%B0%E5%AD%97%E5%BC%8F%E7%A7%92%E8%A1%A8/</url>
     <content><![CDATA[<h1 id="实验目的">实验目的：</h1>
@@ -1088,59 +1279,6 @@ Dabble）将8位二进制输入转换为两个4位BCD输出，分别表示十位
       </categories>
       <tags>
         <tag>数字系统设计实验</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>交叉一致性训练</title>
-    <url>/2024/06/09/%E4%BA%A4%E5%8F%89%E4%B8%80%E8%87%B4%E6%80%A7%E8%AE%AD%E7%BB%83/</url>
-    <content><![CDATA[<h1 id="交叉一致性训练cct">交叉一致性训练（CCT）</h1>
-<p>是一种半监督学习方法，特别针对图像的语义分割，基本原理是通过大量的未标记数据来提高网络模型的性能。</p>
-<h2 id="主译码器与辅助姨妈期相结合">主译码器与辅助姨妈期相结合</h2>
-<p>CCT模型中包含一个主解码器和至少一个辅助解码器。这些解码器共享相同的编码器，编码器负责从输入图像中提取特征。</p>
-<h3 id="共享编码器结构"><strong>共享编码器结构</strong>：</h3>
-<p>在CCT中，主解码器和一个或多个辅助解码器共享同一个编码器。这个编码器的作用是从输入图像中提取特征。通过共享编码器，不同的解码器能够分析相同的特征表示，并且在此基础上进行预测。</p>
-<h3 id="主解码器的作用"><strong>主解码器的作用</strong>：</h3>
-<p>主解码器是模型的核心部分，负责进行最终预测。在有监督数据集的场景中，它直接学习从编码器提取的特征到正确标签的映射。</p>
-<h3 id="辅助解码器的作用"><strong>辅助解码器的作用</strong>：</h3>
-<p>辅助解码器与主解码器并行工作，但不是直接用于最终预测。相反，它们的目的是通过不同的视角来分析编码的特征，并与主解码器的输出进行比较。在训练过程中，这些辅助解码器可能会被应用不同的扰动或是训练策略，以增强系统的鲁棒性。</p>
-<h3 id="一致性学习机制"><strong>一致性学习机制</strong>：</h3>
-<p>辅助解码器的输出被用来训练主解码器，以使其输出更加稳定。通过实施一致性损失，确保即使面对经过扰动的输入特征，主解码器的输出也能保持稳定，从而利用未标记数据来模拟监着学习情形。</p>
-<h3 id="多任务学习"><strong>多任务学习</strong>：</h3>
-<p>CCT框架还可能包括多任务学习的元素，即同时学习多个相关任务来进一步丰富特征的表示。这种方式可以使得主解码器和辅助解码器的能力相互补充，并且提升整个网络的泛化能力。</p>
-<h2 id="应用扰动">应用扰动</h2>
-<p>为了增加训练的难度并提升模型的泛化能力，对编码器的输出应用随机扰动。这些扰动可以是随机噪声、去色、旋转等。这样做的目的是让模型学会忽略不重要的变化，专注于对图像语义的理解。</p>
-<h3 id="扰动类型">扰动类型：</h3>
-<p>扰动可以是多种多样的，包括添加噪声、颜色变换（去色）、旋转、尺度变化、裁剪、模糊等。这些扰动模拟了现实世界中图像可能受到的变化和干扰。</p>
-<h3 id="扰动的目的">扰动的目的：</h3>
-<p>应用这些扰动的主要目的是为了让模型学会从多变的输入中提取核心和可靠的特征。模型不应被某些不重要的图像变化所迷惑，而应专注于图像的语义理解。</p>
-<h3 id="训练过程中的扰动">训练过程中的扰动</h3>
-<p>在CCT的训练过程中，这些扰动被随机应用于编码器提取的特征上。然后，扰动后的特征被送入主解码器和辅助解码器中生成预测结果。</p>
-<h3 id="一致性约束与扰动">一致性约束与扰动</h3>
-<p>通过对比扰动前后的预测结果，CCT使用一致性损失函数来指导模型训练。如果扰动前后的预测结果差异太大，说明模型对输入图像的小变化过于敏感，这时损失函数会惩罚模型，促使其在未来更好地抵抗此类扰动。</p>
-<h3 id="效果验证">效果验证</h3>
-<p>模型在训练过程中通常会被验证其对扰动的鲁棒性。这通常通过在验证集上应用类似但未见过的扰动来完成，来评估模型是否可以有效地处理这些新扰动。</p>
-<h2 id="一致性约束">一致性约束</h2>
-<h3 id="确保预测的稳定性">确保预测的稳定性：</h3>
-<p>一致性约束的主要目标是保持模型预测的稳定性。模型通过未变化和变化后的输入数据学习，无论输入数据如何变化，模型都应产生准确且一致的输出。</p>
-<h3 id="最小化预测差异">最小化预测差异</h3>
-<p>一致性约束通常通过一个损失函数实现，这个损失函数量化了两个解码器输出的差异。在CCT中，损失函数鼓励模型最小化因不同扰动导致输出结果差异，从而强制它们在经过扰动的数据上也能预测出相似的结果。</p>
-<h3 id="实施策略">实施策略</h3>
-<p>一致性约束可能会以多种方式实施。例如，可以是简单地比较主解码器和辅助解码器的输出，或者使用更复杂的策略如温度缩放或一定比例的混合策略等，来确保预测结果尽可能一致。</p>
-<h3 id="未标记数据的使用">未标记数据的使用</h3>
-<p>一致性约束是利用未标记数据的有效手段。通过对未标记数据的预测结果施加约束，模型可以通过大量的未标记样本学习，提高其对未知数据的泛化能力。</p>
-<h3 id="调整与优化">调整与优化</h3>
-<p>训练过程中，一致性损失权重可能会根据具体的训练动态进行调整。例如，模型在初期训练时可能对一致性约束较不敏感，但随着训练的深入，一致性损失的权重可能会增加，以促进更加精确的预测。</p>
-<h2 id="利用未标记数据">利用未标记数据</h2>
-<h3 id="数据集的结合">数据集的结合：</h3>
-<p>CCT结合了标记数据和未标记数据。标记数据用来训练模型对已知类别的正确分割，而未标记数据则用来强制模型在更广泛的数据分布上保持一致性。</p>
-<h3 id="端对端训练">端对端训练</h3>
-<p>CCT允许对包含未标记数据的整个数据集进行端到端训练，这样模型可以在学习过程中自然地从未标记数据中获益。</p>
-]]></content>
-      <categories>
-        <category>CV论文笔记</category>
-      </categories>
-      <tags>
-        <tag>半监督语义分割</tag>
       </tags>
   </entry>
 </search>
